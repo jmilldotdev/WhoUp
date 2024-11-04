@@ -1,5 +1,5 @@
 {
-  "name": "@repo/common",
+  "name": "@repo/supabase",
   "version": "1.0.0",
   "description": "",
   "source": "src/index.ts",
@@ -16,10 +16,15 @@
     "types": "supabase gen types typescript --local > src/schema.gen.ts ",
     "migrate:debug": "supabase db reset --debug && supabase gen types typescript --local > src/schema.gen.ts "
   },
+  "exports": {
+    "./types": "./src/types.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@supabase/supabase-js": "^2.43.1",
     "dotenv": "^16.4.5",
     "microbundle": "^0.15.1",
