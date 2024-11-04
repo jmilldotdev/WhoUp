@@ -1,0 +1,33 @@
+{
+  "name": "@repo/common",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.m.js",
+  "unpkg": "dist/index.umd.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "microbundle watch --tsconfig tsconfig.json --no-sourcemap",
+    "dev:tutti": "microbundle watch --tsconfig tsconfig.json --no-sourcemap",
+    "db": "pnpm migrate && pnpm types && pnpm seed",
+    "migrate": "supabase db reset",
+    "seed": "ts-node src/seed.ts",
+    "types": "supabase gen types typescript --local > src/schema.gen.ts ",
+    "migrate:debug": "supabase db reset --debug && supabase gen types typescript --local > src/schema.gen.ts "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.43.1",
+    "dotenv": "^16.4.5",
+    "microbundle": "^0.15.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "uuid": "^9.0.1"
+  },
+  "files": [
+    "dist"
+  ]
+}
