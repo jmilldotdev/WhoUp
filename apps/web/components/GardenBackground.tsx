@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sky, Stars, Cloud } from "@react-three/drei";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { extend } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
@@ -240,6 +240,24 @@ function AnimatedWater({
 }
 
 export function GardenBackground() {
+  const [aspectRatio, setAspectRatio] = useState(1);
+
+  // Handle window resize and initial aspect ratio
+  useEffect(() => {
+    const updateAspectRatio = () => {
+      setAspectRatio(window.innerWidth / window.innerHeight);
+    };
+
+    // Set initial aspect ratio
+    updateAspectRatio();
+
+    // Add resize listener
+    window.addEventListener("resize", updateAspectRatio);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", updateAspectRatio);
+  }, []);
+
   const getTimeBasedColors = (): {
     sky1: string;
     sky2: string;
@@ -319,7 +337,7 @@ export function GardenBackground() {
             color2={new THREE.Color(sky2)}
             color3={new THREE.Color(sky3)}
             color4={new THREE.Color(sky4)}
-            aspectRatio={window.innerWidth / window.innerHeight}
+            aspectRatio={aspectRatio}
           />
         </mesh>
         <Stars radius={100} depth={50} count={5000} factor={4} />
