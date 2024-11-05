@@ -1,0 +1,147 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  color: var(--foreground);
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.homeButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulse 1.5s infinite;
+}
+
+.homeButton:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.homeIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.searchSection {
+  margin-bottom: 40px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--foreground);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.searchResults {
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.userCard:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.username {
+  font-size: 1.1rem;
+}
+
+.addButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #FE730A;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  background: #ff8524;
+}
+
+.addButton.pending {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.subtitle {
+  margin: 30px 0 20px;
+  font-size: 1.5rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+} 
