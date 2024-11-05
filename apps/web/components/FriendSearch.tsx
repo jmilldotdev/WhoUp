@@ -1,9 +1,5 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import styles from "./settings.module.css";
-import { Home } from "lucide-react";
+import { useState } from "react";
+import styles from "../app/settings/settings.module.css";
 
 interface User {
   id: string;
@@ -11,27 +7,27 @@ interface User {
   status?: "pending" | "friend";
 }
 
-export default function Settings() {
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function FriendSearch({ isOpen, onClose }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [friends, setFriends] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Mock search function - replace with actual API call
   const searchUsers = async (query: string) => {
     setIsSearching(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Mock results - replace with actual API call
     const mockResults = [
-      { id: "1", username: query + "_user1" },
-      { id: "2", username: query + "_user2" },
-      { id: "3", username: query + "_user3" },
+      { id: "1", username: "user1" },
+      { id: "2", username: "user2" },
+      { id: "3", username: "user3" },
     ].filter((user) =>
       user.username.toLowerCase().includes(query.toLowerCase())
     );
-
     setSearchResults(mockResults);
     setIsSearching(false);
   };
@@ -47,21 +43,26 @@ export default function Settings() {
   };
 
   const addFriend = (user: User) => {
-    setFriends(prevFriends => [...prevFriends, { ...user, status: "friend" }]);
-    setSearchResults(prevResults => 
-      prevResults.filter(result => result.id !== user.id)
+    setFriends((prevFriends) => [
+      ...prevFriends,
+      { ...user, status: "friend" },
+    ]);
+    setSearchResults((prevResults) =>
+      prevResults.filter((result) => result.id !== user.id)
     );
   };
 
-  return (
-    <div className={styles.page}>
-      <Link href="/">
-        <div className={styles.homeButton}>
-          <img src="/rock.png" alt="Home" className={styles.homeIcon} />
-        </div>
-      </Link>
+  if (!isOpen) return null;
 
-      <div className={styles.container}>
+  return (
+    <div
+      className={styles.overlay}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className={`${styles.container} ${styles.overlayContainer}`}>
+        <h2 className={styles.subtitle}>Friends</h2>
         <div className={styles.searchSection}>
           <input
             type="text"
@@ -69,6 +70,7 @@ export default function Settings() {
             value={searchQuery}
             onChange={handleSearch}
             className={styles.searchInput}
+            autoFocus
           />
 
           <div className={styles.searchResults}>
@@ -93,7 +95,6 @@ export default function Settings() {
         </div>
 
         <div className={styles.friendsSection}>
-          <h2 className={styles.subtitle}>Friends</h2>
           {friends.length === 0 ? (
             <div className={styles.emptyState}>No friends added yet</div>
           ) : (

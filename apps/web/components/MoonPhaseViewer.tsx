@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import styles from "../app/page.module.css";
 import { GardenBackground } from "./GardenBackground";
-import Link from "next/link";
+import { FriendSearch } from "./FriendSearch";
 
 export function MoonPhaseViewer() {
   const getTodaysMoonPhase = (): number => {
@@ -25,6 +25,7 @@ export function MoonPhaseViewer() {
   const [isHolding, setIsHolding] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [isFriendSearchOpen, setIsFriendSearchOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -156,43 +157,43 @@ export function MoonPhaseViewer() {
     <>
       <GardenBackground />
       <div className={styles.page}>
-        <Link href="/settings">
-          <div
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            width: "40px",
+            height: "40px",
+            backgroundColor: "white",
+            borderRadius: "50%",
+            opacity: 0.5,
+            boxShadow: "0 0 10px 5px rgba(255, 255, 255, 0.8)",
+            transition: "opacity 0.3s, transform 0.3s",
+            animation: "pulse 1.5s infinite",
+            zIndex: 1000,
+            cursor: "pointer",
+          }}
+          onClick={() => setIsFriendSearchOpen(true)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.transform = "scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "0.5";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          <img
+            src="/rock2.png"
+            alt="Friends"
             style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              width: "40px",
-              height: "40px",
-              backgroundColor: "white",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
               borderRadius: "50%",
-              opacity: 0.5,
-              boxShadow: "0 0 10px 5px rgba(255, 255, 255, 0.8)",
-              transition: "opacity 0.3s, transform 0.3s",
-              animation: "pulse 1.5s infinite",
-              zIndex: 1000,
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "1";
-              e.currentTarget.style.transform = "scale(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "0.5";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
-          >
-            <img
-              src="/rock2.png"
-              alt="Obsidian Rock"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                borderRadius: "50%",
-              }}
-            />
-          </div>
-        </Link>
+          />
+        </div>
 
         <div
           style={{
@@ -334,6 +335,11 @@ export function MoonPhaseViewer() {
         </div>
       </div>
 
+      <FriendSearch
+        isOpen={isFriendSearchOpen}
+        onClose={() => setIsFriendSearchOpen(false)}
+      />
+
       {/* White overlay for fade transition */}
       <div
         style={{
@@ -419,7 +425,8 @@ export function MoonPhaseViewer() {
           }
         }
         @keyframes pulse {
-          0%, 100% {
+          0%,
+          100% {
             transform: scale(1);
           }
           50% {
