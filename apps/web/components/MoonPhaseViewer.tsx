@@ -5,21 +5,14 @@ import { useState, useEffect } from "react";
 import styles from "../app/page.module.css";
 import { GardenBackground } from "./GardenBackground";
 import { FriendSearch } from "./FriendSearch";
+import { useRouter } from "next/navigation";
 
 export function MoonPhaseViewer() {
-  const getTodaysMoonPhase = (): number => {
-    const today = new Date();
-    const new_moon = new Date(2000, 0, 6, 18, 14, 0); // Known new moon date
-    const phase_diff =
-      ((today.getTime() - new_moon.getTime()) / 86400000) % 29.530588853;
-
-    return Math.floor(phase_diff * (28 / 29.530588853)) + 1;
-  };
-
-  const [currentDay, setCurrentDay] = useState(getTodaysMoonPhase());
+  const router = useRouter();
+  const [currentDay, setCurrentDay] = useState<number>(1);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null); // Initialize as null
   const [holdDuration, setHoldDuration] = useState(0);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   const [isHolding, setIsHolding] = useState(false);
@@ -28,6 +21,20 @@ export function MoonPhaseViewer() {
   const [isFriendSearchOpen, setIsFriendSearchOpen] = useState(false);
 
   useEffect(() => {
+    const getTodaysMoonPhase = (): number => {
+      const today = new Date();
+      const new_moon = new Date(2000, 0, 6, 18, 14, 0);
+      const phase_diff =
+        ((today.getTime() - new_moon.getTime()) / 86400000) % 29.530588853;
+
+      return Math.floor(phase_diff * (28 / 29.530588853)) + 1;
+    };
+
+    setCurrentDay(getTodaysMoonPhase());
+  }, []);
+
+  useEffect(() => {
+    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -105,6 +112,8 @@ export function MoonPhaseViewer() {
   };
 
   const getFormattedDateTime = (): string => {
+    if (!currentTime) return ""; // Return empty string if time isn't set yet
+
     const date = currentTime.toLocaleDateString("en-US", {
       month: "2-digit",
       day: "2-digit",
@@ -135,7 +144,7 @@ export function MoonPhaseViewer() {
           setFadeOut(true);
           // Delay the redirect to allow for fade animation
           setTimeout(() => {
-            window.location.href = "/zengarden";
+            router.push("/zengarden");
           }, 1000); // 1 second fade out
         }
         return newDuration;
@@ -210,7 +219,7 @@ export function MoonPhaseViewer() {
             fontFamily: "monospace",
           }}
         >
-          {getFormattedDateTime()}
+          {currentTime && getFormattedDateTime()}
         </div>
 
         <div
