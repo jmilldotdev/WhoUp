@@ -8,8 +8,17 @@ import { AlienFlower } from "./AlienFlower";
 import { Home } from "lucide-react";
 import Link from "next/link";
 
+interface Friend {
+  name: string;
+  phone: string;
+}
+
 export default function ZenGardenScene() {
   const mountRef = useRef<HTMLDivElement>(null);
+
+  let glowTarget = 0;
+  let currentGlow = 0;
+  const glowSpeed = 0.1; // Adjust this value to control transition speed
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -247,11 +256,26 @@ export default function ZenGardenScene() {
     water.position.y = -5;
     scene.add(water);
 
-    // Custom shader for iridescent rocks
+    // Add this mock friend data
+    const friends: Friend[] = [
+      { name: "Emma Wilson", phone: "555-0101" },
+      { name: "Liam Chen", phone: "555-0102" },
+      { name: "Sophia Patel", phone: "555-0103" },
+      { name: "Noah Kim", phone: "555-0104" },
+      { name: "Olivia Santos", phone: "555-0105" },
+      { name: "Lucas Singh", phone: "555-0106" },
+      { name: "Ava Johnson", phone: "555-0107" },
+      { name: "Ethan Lee", phone: "555-0108" },
+      { name: "Isabella Wang", phone: "555-0109" },
+      { name: "Mason Garcia", phone: "555-0110" },
+    ];
+
+    // Modify the rock shader material to include glow
     const rockShaderMaterial = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
         colorShift: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
+        glowIntensity: { value: 0.0 }, // Add this for hover effect
       },
       vertexShader: `
         varying vec3 vNormal;
@@ -266,15 +290,14 @@ export default function ZenGardenScene() {
       fragmentShader: `
         uniform float time;
         uniform vec3 colorShift;
+        uniform float glowIntensity;
         varying vec3 vNormal;
         varying vec3 vPosition;
         
         void main() {
           vec3 normal = normalize(vNormal);
-          
-          // Create iridescent effect based on normal direction and position
           float fresnel = pow(1.0 - abs(dot(normal, vec3(0.0, 0.0, 1.0))), 2.0);
-          vec3 baseColor = vec3(0.2, 0.2, 0.2); // Dark base color
+          vec3 baseColor = vec3(0.2, 0.2, 0.2);
           
           // Rainbow color calculation
           vec3 rainbow = 0.5 + 0.5 * cos(time * 0.2 + vPosition.y + vec3(0.0, 2.0, 4.0));
@@ -286,40 +309,153 @@ export default function ZenGardenScene() {
           float metallic = pow(fresnel, 3.0) * 0.8;
           finalColor += vec3(metallic);
           
+          // Add inner glow
+          vec3 glowColor = vec3(1.0, 0.8, 0.4); // Warm glow color
+          finalColor += glowColor * glowIntensity * (1.0 - fresnel);
+          
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
     });
 
     // Modified createRock function
-    const createRock = (x: number, y: number, z: number) => {
-      const rockGeometry = new THREE.DodecahedronGeometry(
-        Math.random() * 2 + 1
-      );
+    const createRock = (friend: Friend, index: number) => {
+      const rockGeometry = new THREE.DodecahedronGeometry(Math.random() * 1 + 1.5);
       const rockMaterial = rockShaderMaterial.clone();
       const rock = new THREE.Mesh(rockGeometry, rockMaterial);
-      rock.position.set(x, y, z);
+      
+      // Position rocks in a circle
+      const angle = (index / friends.length) * Math.PI * 2;
+      const radius = 15;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      rock.position.set(x, Math.random() * 2 - 3, z);
+      
       rock.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
         Math.random() * Math.PI
       );
+      
+      // Add friend data to the rock object
+      (rock as any).userData = { friend };
+      
       scene.add(rock);
-      return rock; // Return rock for animation
+      return rock;
     };
 
-    // Create array to store rocks for animation
-    const rocks: THREE.Mesh[] = [];
+    // Create rocks based on friends data
+    const rocks = friends.map((friend, index) => createRock(friend, index));
 
-    // Add several rocks
-    for (let i = 0; i < 7; i++) {
-      const rock = createRock(
-        Math.random() * 40 - 20,
-        Math.random() * 2 - 3,
-        Math.random() * 40 - 20
-      );
-      rocks.push(rock);
-    }
+    // Update the createNameSprite function to add text glow
+    const createNameSprite = (text: string) => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = 512;
+      canvas.height = 128;
+      
+      if (context) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Add glow effect
+        context.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        context.shadowBlur = 20;
+        context.shadowOffsetX = 0;
+        context.shadowOffsetY = 0;
+        
+        // First pass - draw the glow
+        context.font = 'Bold 48px Arial';
+        context.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(text, canvas.width / 2, canvas.height / 2);
+        
+        // Second pass - draw the text
+        context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        context.shadowBlur = 4;
+        context.shadowOffsetX = 2;
+        context.shadowOffsetY = 2;
+        context.fillStyle = 'white';
+        context.fillText(text, canvas.width / 2, canvas.height / 2);
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMaterial = new THREE.SpriteMaterial({ 
+        map: texture,
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        sizeAttenuation: false
+      });
+
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.scale.set(0.5, 0.125, 1);
+      sprite.renderOrder = 999999;
+      return sprite;
+    };
+
+    // Add hover interaction
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let hoveredRock: THREE.Mesh | null = null;
+    let nameSprite: THREE.Sprite | null = null;
+
+    const onMouseMove = (event: MouseEvent) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(rocks);
+
+      // Reset all rocks' glow when not hovering
+      if (intersects.length === 0) {
+        glowTarget = 0;
+        // Reset glow for previously hovered rock
+        if (hoveredRock && 
+            hoveredRock.material instanceof THREE.ShaderMaterial && 
+            hoveredRock.material.uniforms?.glowIntensity) {
+          hoveredRock.material.uniforms.glowIntensity.value = 0;
+        }
+        hoveredRock = null;
+        if (nameSprite) {
+          nameSprite.material.opacity = 0;
+        }
+      }
+
+      // Set new hover state only if intersecting a different rock
+      if (intersects.length > 0 && intersects[0]?.object) {
+        const newHoveredRock = intersects[0].object as THREE.Mesh;
+        if (newHoveredRock !== hoveredRock) {
+          // Reset previous rock's glow if exists
+          if (hoveredRock && 
+              hoveredRock.material instanceof THREE.ShaderMaterial && 
+              hoveredRock.material.uniforms?.glowIntensity) {
+            hoveredRock.material.uniforms.glowIntensity.value = 0;
+          }
+          
+          hoveredRock = newHoveredRock;
+          glowTarget = 0.5;
+          
+          // Show name sprite
+          const friend = (hoveredRock as any).userData.friend;
+          if (!nameSprite) {
+            nameSprite = createNameSprite(friend.name);
+            scene.add(nameSprite);
+          }
+          
+          nameSprite.material.map = createNameSprite(friend.name).material.map;
+          nameSprite.position.set(0, 0, -1);
+          nameSprite.position.unproject(camera);
+          nameSprite.quaternion.copy(camera.quaternion);
+          
+          // Fade in the name sprite
+          nameSprite.material.opacity = 1;
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
 
     // Create alien flowers
     const alienFlowers: AlienFlower[] = [];
@@ -363,6 +499,16 @@ export default function ZenGardenScene() {
       requestAnimationFrame(animate);
       controls.update();
 
+      // Interpolate glow value
+      currentGlow += (glowTarget - currentGlow) * glowSpeed;
+      
+      // Apply interpolated glow to hovered rock
+      if (hoveredRock && 
+          hoveredRock.material instanceof THREE.ShaderMaterial && 
+          hoveredRock.material.uniforms?.glowIntensity) {
+        hoveredRock.material.uniforms.glowIntensity.value = currentGlow;
+      }
+
       // Animate sun rays
       sunRays.forEach((ray, index) => {
         ray.rotation.z += 0.0005;
@@ -398,6 +544,11 @@ export default function ZenGardenScene() {
         flower.animate(Date.now());
       });
 
+      // Update name sprite orientation
+      if (nameSprite) {
+        nameSprite.quaternion.copy(camera.quaternion);
+      }
+
       renderer.render(scene, camera);
     };
 
@@ -416,6 +567,7 @@ export default function ZenGardenScene() {
     return () => {
       window.removeEventListener("resize", handleResize);
       mountRef.current?.removeChild(renderer.domElement);
+      window.removeEventListener('mousemove', onMouseMove);
     };
   }, []);
 
