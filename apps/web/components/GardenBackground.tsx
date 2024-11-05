@@ -6,8 +6,8 @@ import { useRef } from "react";
 import * as THREE from "three";
 import { extend } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
-import { MeshStandardMaterial } from 'three';
-
+import { MeshStandardMaterial } from "three";
+import { colorSets2 } from "../constants/skyColors";
 // Add this type declaration before the component
 declare global {
   namespace JSX {
@@ -24,6 +24,7 @@ const SkyGradientMaterial = shaderMaterial(
     color1: new THREE.Color("#000000"),
     color2: new THREE.Color("#000000"),
     color3: new THREE.Color("#000000"),
+    color4: new THREE.Color("#000000"),
     aspectRatio: 1.0,
   },
   // Vertex shader
@@ -34,30 +35,38 @@ const SkyGradientMaterial = shaderMaterial(
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
-  // Fragment shader
+  // Updated Fragment shader for 4 colors
   /*glsl*/ `
     uniform vec3 color1;
     uniform vec3 color2;
     uniform vec3 color3;
+    uniform vec3 color4;
     uniform float aspectRatio;
     varying vec2 vUv;
 
     void main() {
       vec2 center = vec2(0.5, 0.5);
-      vec2 uv = vUv;
-      uv.x *= aspectRatio;
-      float dist = distance(uv, vec2(center.x * aspectRatio, center.y));
+      vec2 normalizedUv = vUv - center;
+      normalizedUv.x *= aspectRatio;
+      
+      float maxDist = distance(vec2(-0.5 * aspectRatio, -0.5), vec2(0.0, 0.0));
+      float dist = length(normalizedUv) / maxDist;
+      
+      // Define three transition points for four colors
+      float step1 = 0.23; // First color takes up 15% from center
+      float step2 = 0.28;  // Second color takes up next 15%
+      float step3 = 0.4;  // Third color takes up next 20%
+                         // Fourth color takes up remaining 50%
       
       vec3 color;
-      float step1 = 0.2;
-      float step2 = 0.5;
-      
       if (dist < step1) {
         color = mix(color1, color2, smoothstep(0.0, step1, dist));
       } else if (dist < step2) {
         color = mix(color2, color3, smoothstep(step1, step2, dist));
+      } else if (dist < step3) {
+        color = mix(color3, color4, smoothstep(step2, step3, dist));
       } else {
-        color = color3;
+        color = color4;
       }
       
       gl_FragColor = vec4(color, 1.0);
@@ -195,27 +204,35 @@ const WaterMaterial = shaderMaterial(
 extend({ WaterMaterial });
 
 // Add this new component before GardenBackground
-function AnimatedWater({ sky1, sky2, sky3 }: { sky1: string; sky2: string; sky3: string }) {
+function AnimatedWater({
+  sky1,
+  sky2,
+  sky3,
+  sky4,
+}: {
+  sky1: string;
+  sky2: string;
+  sky3: string;
+  sky4: string;
+}) {
   const waterRef = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     if (waterRef.current) {
       // @ts-ignore - material type is custom
-      waterRef.current.material.uniforms.time.value = clock.getElapsedTime() * 0.3;
+      waterRef.current.material.uniforms.time.value =
+        clock.getElapsedTime() * 0.3;
     }
   });
 
   return (
-    <mesh 
-      ref={waterRef}
-      rotation={[-Math.PI / 2, 0, 0]} 
-      position={[0, 0.5, 0]}
-    >
+    <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.5, 0]}>
       <planeGeometry args={[30, 30, 32, 32]} />
       <waterMaterial
         color1={new THREE.Color(sky1).multiplyScalar(1.2)}
         color2={new THREE.Color(sky2).multiplyScalar(1.1)}
         color3={new THREE.Color(sky3)}
+        color4={new THREE.Color(sky4)}
         transparent
       />
     </mesh>
@@ -227,32 +244,20 @@ export function GardenBackground() {
     sky1: string;
     sky2: string;
     sky3: string;
+    sky4: string;
     ground: string;
   } => {
     const hour = new Date().getHours();
+
     const timeSlot = Math.floor(hour / 2) % 12;
 
     // Base green color for ground
     const baseGround = "#22D91E";
 
     // Updated color combinations for three-color gradients
-    const colorSets = [
-      { sky1: "#000066", sky2: "#000033", sky3: "#000022", ground: baseGround }, // Midnight 0-1
-      { sky1: "#1a0033", sky2: "#120024", sky3: "#0a0018", ground: baseGround }, // Late Night 2-3
-      { sky1: "#2a2a60", sky2: "#1a1a40", sky3: "#0a0a20", ground: baseGround }, // Dawn 4-5
-      { sky1: "#9b5e97", sky2: "#6b3e77", sky3: "#3b1e57", ground: baseGround }, // Sunrise 6-7
-      { sky1: "#aad0ff", sky2: "#88b0ff", sky3: "#6690ff", ground: baseGround }, // Morning 8-9
-      { sky1: "#d4e7ff", sky2: "#b4c7ff", sky3: "#94a7ff", ground: baseGround }, // Late Morning 10-11
-      { sky1: "#a7eefb", sky2: "#87ceeb", sky3: "#67aedb", ground: baseGround }, // Noon 12-13
-      { sky1: "#aad0ff", sky2: "#88b0ff", sky3: "#6690ff", ground: baseGround }, // Late Afternoon 14-15
-      { sky1: "#9b5e97", sky2: "#6b3e77", sky3: "#3b1e57", ground: baseGround }, // Sunset 16-17
-      { sky1: "#FEFFF7", sky2: "#A65356", sky3: "#FAE1C7", ground: baseGround }, // Evening 18-19
-      { sky1: "#1a0033", sky2: "#120024", sky3: "#0a0018", ground: baseGround }, // Night 20-21
-      { sky1: "#2a2a60", sky2: "#1a1a40", sky3: "#0a0a20", ground: baseGround }, // Late Night 22-23
-    ];
 
-    const colors = colorSets[timeSlot]!;
-    
+    const colors = colorSets2[timeSlot]!;
+
     // Blend sky colors with ground
     const skyColor = new THREE.Color(colors.sky2);
     const groundColor = new THREE.Color(colors.ground);
@@ -264,11 +269,11 @@ export function GardenBackground() {
 
     return {
       ...colors,
-      ground: `#${blendedColor.getHexString()}`
+      ground: `#${blendedColor.getHexString()}`,
     };
   };
 
-  const { sky1, sky2, sky3, ground } = getTimeBasedColors();
+  const { sky1, sky2, sky3, sky4, ground } = getTimeBasedColors();
   const groundRef = useRef<THREE.Mesh>(null);
 
   // Add this function at the start of the component
@@ -294,8 +299,8 @@ export function GardenBackground() {
       }}
     >
       <Canvas camera={{ position: [0, 20, 35], fov: 75 }}>
-        <fog 
-          attach="fog" 
+        <fog
+          attach="fog"
           args={[sky3, 15, 50]} // color, near, far
         />
         <fogExp2
@@ -313,6 +318,7 @@ export function GardenBackground() {
             color1={new THREE.Color(sky1)}
             color2={new THREE.Color(sky2)}
             color3={new THREE.Color(sky3)}
+            color4={new THREE.Color(sky4)}
             aspectRatio={window.innerWidth / window.innerHeight}
           />
         </mesh>
@@ -338,15 +344,15 @@ export function GardenBackground() {
           </mesh>
 
           {/* Replace the water mesh with the new component */}
-          <AnimatedWater sky1={sky1} sky2={sky2} sky3={sky3} />
+          <AnimatedWater sky1={sky1} sky2={sky2} sky3={sky3} sky4={sky4} />
 
           {/* Mountain ring - updated with opening at front */}
           <group>
             {Array.from({ length: 16 }).map((_, i) => {
               // Adjust angle range to leave an opening at the front
               // Skip mountains in the front 90-degree arc (-45° to +45°)
-              const angle = ((i / 16) * Math.PI * 2) - Math.PI / 2; // Start from -90°
-              
+              const angle = (i / 16) * Math.PI * 2 - Math.PI / 2; // Start from -90°
+
               // Skip mountains in the front opening
               if (angle > -Math.PI * 0.75 && angle < -Math.PI * 0.25) {
                 return null;
@@ -357,22 +363,15 @@ export function GardenBackground() {
               const z = Math.sin(angle) * radius;
               const height = getMountainHeight(i);
               const width = getMountainWidth(i);
-              
+
               return (
                 <mesh
                   key={i}
                   position={[x, height / 2, z]}
                   rotation={[0, angle + Math.PI, 0]}
                 >
-                  <cylinderGeometry 
-                    args={[
-                      width * 0.5,
-                      width,
-                      height,
-                      8,
-                      4,
-                      false
-                    ]} 
+                  <cylinderGeometry
+                    args={[width * 0.5, width, height, 8, 4, false]}
                   />
                   <meshStandardMaterial
                     color={ground}
@@ -388,7 +387,6 @@ export function GardenBackground() {
         {/* Adjust lighting for better terrain visibility */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 20, 10]} intensity={1.5} castShadow />
-
       </Canvas>
     </div>
   );
