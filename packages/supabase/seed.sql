@@ -38,6 +38,25 @@ WITH inserted_users AS (
             '',
             '',
             ''
+        ),
+        (
+            '00000000-0000-0000-0000-000000000000',
+            uuid_generate_v4(),
+            'authenticated',
+            'authenticated',
+            'test2@test.com',
+            crypt('test123', gen_salt('bf')),
+            current_timestamp,
+            current_timestamp,
+            current_timestamp,
+            '{"provider":"email","providers":["email"]}',
+            '{}',
+            current_timestamp,
+            current_timestamp,
+            '',
+            '',
+            '',
+            ''
         ) RETURNING id,
         email
 ),
