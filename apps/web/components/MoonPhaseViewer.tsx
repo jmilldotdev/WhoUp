@@ -22,6 +22,8 @@ export function MoonPhaseViewer() {
   const [holdDuration, setHoldDuration] = useState(0);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   const [isHolding, setIsHolding] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -124,7 +126,18 @@ export function MoonPhaseViewer() {
   const handleRockMouseDown = () => {
     setIsHolding(true);
     const timer = setInterval(() => {
-      setHoldDuration((prev) => prev + 0.1);
+      setHoldDuration((prev) => {
+        const newDuration = prev + 0.1;
+        if (newDuration >= 5) {
+          clearInterval(timer);
+          setFadeOut(true);
+          // Delay the redirect to allow for fade animation
+          setTimeout(() => {
+            window.location.href = '/zengarden';
+          }, 1000); // 1 second fade out
+        }
+        return newDuration;
+      });
     }, 100);
     setHoldTimer(timer);
   };
@@ -225,7 +238,14 @@ export function MoonPhaseViewer() {
               onMouseDown={handleRockMouseDown}
               onMouseUp={handleRockMouseUp}
               onMouseLeave={handleRockMouseUp}
-              style={{ cursor: "pointer", position: 'relative', zIndex: 1 }}
+              style={{ 
+                cursor: "pointer", 
+                position: 'relative', 
+                zIndex: 1,
+                animation: holdDuration >= 3 
+                  ? `shake${Math.min(Math.floor((holdDuration - 3) * 2) + 1, 4)} 0.1s linear infinite`
+                  : '',
+              }}
             />
           </div>
 
@@ -272,6 +292,52 @@ export function MoonPhaseViewer() {
           </div>
         </div>
       </div>
+
+      {/* White overlay for fade transition */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'white',
+          opacity: fadeOut ? 1 : 0,
+          pointerEvents: fadeOut ? 'all' : 'none',
+          transition: 'opacity 1s ease-in-out',
+          zIndex: 9999,
+        }}
+      />
+      <style jsx global>{`
+        @keyframes shake1 {
+          0% { transform: translate(1px, 0); }
+          25% { transform: translate(-1px, 0); }
+          50% { transform: translate(1px, 0); }
+          75% { transform: translate(-1px, 0); }
+          100% { transform: translate(1px, 0); }
+        }
+        @keyframes shake2 {
+          0% { transform: translate(2px, 0); }
+          25% { transform: translate(-2px, 0); }
+          50% { transform: translate(2px, 0); }
+          75% { transform: translate(-2px, 0); }
+          100% { transform: translate(2px, 0); }
+        }
+        @keyframes shake3 {
+          0% { transform: translate(3px, 0); }
+          25% { transform: translate(-3px, 0); }
+          50% { transform: translate(3px, 0); }
+          75% { transform: translate(-3px, 0); }
+          100% { transform: translate(3px, 0); }
+        }
+        @keyframes shake4 {
+          0% { transform: translate(4px, 0); }
+          25% { transform: translate(-4px, 0); }
+          50% { transform: translate(4px, 0); }
+          75% { transform: translate(-4px, 0); }
+          100% { transform: translate(4px, 0); }
+        }
+      `}</style>
     </>
   );
 }
