@@ -2,16 +2,60 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export async function createBroadcast(userId: string) {
+interface CreateBroadcastParams {
+  userId: string;
+  topic: string;
+  isPublic: boolean;
+}
+
+export async function createBroadcast({
+  userId,
+  topic,
+  isPublic,
+}: CreateBroadcastParams) {
   const supabase = await createClient();
 
-  const { data: broadcast, error } = await supabase
+  // Create the broadcast
+  const { data: broadcast, error: broadcastError } = await supabase
     .from("Broadcasts")
-    .insert([{ user_id: userId }])
+    .insert([
+      {
+        user_id: userId,
+        topic,
+        is_public: isPublic,
+        is_targeted: false,
+      },
+    ])
     .select()
     .single();
 
-  if (error) throw error;
+  if (broadcastError) throw broadcastError;
+
+  // If private, add BroadcastUsers for friends
+  if (!isPublic) {
+    // Get user's friends
+    const { data: friends, error: friendsError } = await supabase
+      .from("UserFriendships")
+      .select("friend_id")
+      .eq("user_id", userId);
+
+    if (friendsError) throw friendsError;
+
+    // Create BroadcastUsers entries
+    if (friends?.length) {
+      const broadcastUsers = friends.map((friend) => ({
+        broadcast_id: broadcast.id,
+        user_id: friend.friend_id,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("BroadcastUsers")
+        .insert(broadcastUsers);
+
+      if (insertError) throw insertError;
+    }
+  }
+
   return broadcast;
 }
 
