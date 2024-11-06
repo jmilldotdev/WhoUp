@@ -4,6 +4,8 @@ import "./globals.css";
 import { getCurrentUser, getUserProfile } from "@/actions/auth";
 import { UserProvider } from "@/providers/UserProvider";
 import { UsernameRequiredWrapper } from "@/components/UsernameRequiredWrapper";
+import { Toaster } from 'sonner';
+import { getUserGardenObjects } from "@/actions/gardenObjects";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,13 +28,19 @@ export default async function RootLayout({
 }>) {
   const user = await getCurrentUser();
   const profile = await getUserProfile(user);
+  const gardenObjects = await getUserGardenObjects(user?.id);
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <UserProvider userId={user?.id} username={profile?.username}>
+        <UserProvider 
+          userId={user?.id} 
+          username={profile?.username}
+          initialGardenObjects={gardenObjects}
+        >
           <UsernameRequiredWrapper>{children}</UsernameRequiredWrapper>
         </UserProvider>
+        <Toaster />
       </body>
     </html>
   );

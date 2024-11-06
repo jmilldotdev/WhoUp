@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export class AlienLightPods {
   mesh: THREE.Group;
@@ -13,11 +13,13 @@ export class AlienLightPods {
     // Create central stalk
     const stalkPoints = [];
     for (let i = 0; i < 10; i++) {
-      stalkPoints.push(new THREE.Vector3(
-        Math.sin(i * 0.2) * 0.1,
-        i * 0.15,
-        Math.cos(i * 0.2) * 0.1
-      ));
+      stalkPoints.push(
+        new THREE.Vector3(
+          Math.sin(i * 0.2) * 0.1,
+          i * 0.15,
+          Math.cos(i * 0.2) * 0.1
+        )
+      );
     }
 
     const stalkGeo = new THREE.TubeGeometry(
@@ -48,14 +50,14 @@ export class AlienLightPods {
         opacity: 0.8,
       });
       const pod = new THREE.Mesh(podGeo, podMat);
-      
+
       const angle = (i / podCount) * Math.PI * 2;
       pod.position.set(
         Math.cos(angle) * 0.3,
         0.3 + i * 0.3,
         Math.sin(angle) * 0.3
       );
-      
+
       this.pods.push(pod);
       this.mesh.add(pod);
 
@@ -70,7 +72,7 @@ export class AlienLightPods {
       });
       const field = new THREE.Mesh(fieldGeo, fieldMat);
       field.position.copy(pod.position);
-      
+
       this.energyFields.push(field);
       this.mesh.add(field);
     }
@@ -85,11 +87,13 @@ export class AlienLightPods {
 
       for (let j = 0; j < 5; j++) {
         const t = j / 4;
-        points.push(new THREE.Vector3(
-          Math.cos(angle + t * Math.PI) * radius * (1 - t * 0.5),
-          height * t,
-          Math.sin(angle + t * Math.PI) * radius * (1 - t * 0.5)
-        ));
+        points.push(
+          new THREE.Vector3(
+            Math.cos(angle + t * Math.PI) * radius * (1 - t * 0.5),
+            height * t,
+            Math.sin(angle + t * Math.PI) * radius * (1 - t * 0.5)
+          )
+        );
       }
 
       const tendrilGeo = new THREE.TubeGeometry(
@@ -127,10 +131,14 @@ export class AlienLightPods {
     });
 
     // Animate tendrils
-    for (let i = this.pods.length + this.energyFields.length + 1; i < this.mesh.children.length; i++) {
-      const tendril = this.mesh.children[i];
+    for (
+      let i = this.pods.length + this.energyFields.length + 1;
+      i < this.mesh.children.length;
+      i++
+    ) {
+      const tendril = this.mesh.children[i] as THREE.Mesh;
       tendril.rotation.y = Math.sin(time * 0.001 + i) * 0.1;
       tendril.rotation.z = Math.cos(time * 0.001 + i) * 0.1;
     }
   }
-} 
+}
