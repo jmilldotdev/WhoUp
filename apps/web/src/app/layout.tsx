@@ -1,9 +1,9 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { getUserProfile } from "@/actions/auth";
+import { getCurrentUser, getUserProfile } from "@/actions/auth";
 import { UserProvider } from "@/providers/UserProvider";
+import { UsernameRequiredWrapper } from "@/components/UsernameRequiredWrapper";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,20 +24,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const profile = await getUserProfile();
+  const user = await getCurrentUser();
+  const profile = await getUserProfile(user);
 
-  if (!profile) {
-    redirect("/login");
-  }
-
-  if (!profile?.username) {
-    redirect("/login/username");
-  }
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <UserProvider userId={profile?.user_id} username={profile?.username}>
-          {children}
+        <UserProvider userId={user?.id} username={profile?.username}>
+          <UsernameRequiredWrapper>{children}</UsernameRequiredWrapper>
         </UserProvider>
       </body>
     </html>

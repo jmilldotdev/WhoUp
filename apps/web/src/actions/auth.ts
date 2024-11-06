@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { User } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -87,9 +88,8 @@ export async function updateProfile(formData: FormData) {
   redirect("/");
 }
 
-export async function getUserProfile() {
+export async function getUserProfile(user: User | null) {
   const supabase = await createClient();
-  const user = await getCurrentUser();
 
   if (!user) return null;
 
@@ -100,4 +100,15 @@ export async function getUserProfile() {
     .single();
 
   return data;
+}
+
+export async function updateUsername(userId: string, username: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("Profiles")
+    .upsert({ user_id: userId, username })
+    .eq("user_id", userId);
+
+  if (error) throw error;
 }
