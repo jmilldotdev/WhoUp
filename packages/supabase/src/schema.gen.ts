@@ -215,6 +215,38 @@ export type Database = {
           },
         ]
       }
+      GardenObjects: {
+        Row: {
+          created_at: string
+          id: string
+          object_component_type: string
+          object_scene_position: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          object_component_type: string
+          object_scene_position?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          object_component_type?: string
+          object_scene_position?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "GardenObjects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Notifications: {
         Row: {
           action_url: string | null
