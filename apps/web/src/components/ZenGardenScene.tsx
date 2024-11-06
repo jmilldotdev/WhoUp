@@ -4,10 +4,16 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Water } from "three/examples/jsm/objects/Water.js";
-import { AlienFlower } from "./AlienFlower";
+import { AlienBioluminescentFlower } from "@/components/Flowers/AlienBioluminescentFlower";
+import { AlienCrystalFlower } from "@/components/Flowers/AlienCrystalFlower";
+import { AlienPrismFlower } from "@/components/Flowers/AlienPrismFlower";
+import { AlienNebulaFlower } from "@/components/Flowers/AlienNebulaFlower";
+import { AlienVortexFlower } from "@/components/Flowers/AlienVortexFlower";
+import { AlienFlower } from "@/components/Flowers/AlienFlower";
 import Link from "next/link";
 import { QuantumMonolith } from "./QuantumMonolith";
-
+import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
+import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
 interface Friend {
   name: string;
   phone: string;
@@ -463,25 +469,136 @@ export default function ZenGardenScene() {
     window.addEventListener("mousemove", onMouseMove);
 
     // Create alien flowers
-    const alienFlowers: AlienFlower[] = [];
-    const alienFlowerCount = 3;
+    const alienFlowers: (
+      | AlienFlower
+      | AlienCrystalFlower
+      | AlienBioluminescentFlower
+      | AlienPrismFlower
+      | AlienVortexFlower
+      | AlienNebulaFlower
+      | AlienCrystalTree
+      | AlienLightPods
+    )[] = [];
 
-    for (let i = 0; i < alienFlowerCount; i++) {
-      const alienFlower = new AlienFlower();
-      // Position them at different spots than water lilies
-      alienFlower.mesh.position.set(
-        Math.random() * 40 - 20, // x: -20 to 20
-        -4.2, // y: slightly higher than water lilies
-        Math.random() * 40 - 20 // z: -20 to 20
+    // Create regular alien flowers
+    for (let i = 0; i < 2; i++) {
+      const flower = new AlienFlower();
+      flower.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
       );
-
-      // Random rotation and scale
-      alienFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
+      flower.mesh.rotation.y = Math.random() * Math.PI * 2;
       const scale = 0.6 + Math.random() * 0.3;
-      alienFlower.mesh.scale.set(scale, scale, scale);
+      flower.mesh.scale.set(scale, scale, scale);
+      scene.add(flower.mesh);
+      alienFlowers.push(flower);
+    }
 
-      scene.add(alienFlower.mesh);
-      alienFlowers.push(alienFlower);
+    // Add crystal flowers
+    for (let i = 0; i < 2; i++) {
+      const crystalFlower = new AlienCrystalFlower();
+      crystalFlower.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      crystalFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.8 + Math.random() * 0.3;
+      crystalFlower.mesh.scale.set(scale, scale, scale);
+      scene.add(crystalFlower.mesh);
+      alienFlowers.push(crystalFlower);
+    }
+
+    // Add bioluminescent flowers
+    for (let i = 0; i < 2; i++) {
+      const bioFlower = new AlienBioluminescentFlower();
+      bioFlower.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      bioFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.7 + Math.random() * 0.3;
+      bioFlower.mesh.scale.set(scale, scale, scale);
+      scene.add(bioFlower.mesh);
+      alienFlowers.push(bioFlower);
+    }
+
+    // Add prism flowers
+    for (let i = 0; i < 2; i++) {
+      const prismFlower = new AlienPrismFlower();
+      prismFlower.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      prismFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.7 + Math.random() * 0.3;
+      prismFlower.mesh.scale.set(scale, scale, scale);
+      scene.add(prismFlower.mesh);
+      alienFlowers.push(prismFlower);
+    }
+
+    // Add vortex flowers
+    for (let i = 0; i < 2; i++) {
+      const vortexFlower = new AlienVortexFlower();
+      vortexFlower.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      vortexFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.7 + Math.random() * 0.3;
+      vortexFlower.mesh.scale.set(scale, scale, scale);
+      scene.add(vortexFlower.mesh);
+      alienFlowers.push(vortexFlower);
+    }
+
+    // Add nebula flowers
+    for (let i = 0; i < 2; i++) {
+      const nebulaFlower = new AlienNebulaFlower();
+      nebulaFlower.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      nebulaFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.7 + Math.random() * 0.3;
+      nebulaFlower.mesh.scale.set(scale, scale, scale);
+      scene.add(nebulaFlower.mesh);
+      alienFlowers.push(nebulaFlower);
+    }
+
+
+    // Add crystal trees
+    for (let i = 0; i < 2; i++) {
+      const tree = new AlienCrystalTree();
+      tree.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      tree.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.7 + Math.random() * 0.3;
+      tree.mesh.scale.set(scale, scale, scale);
+      scene.add(tree.mesh);
+      alienFlowers.push(tree);
+    }
+
+    // Add light pods
+    for (let i = 0; i < 2; i++) {
+      const pods = new AlienLightPods();
+      pods.mesh.position.set(
+        Math.random() * 40 - 20,
+        -4.2,
+        Math.random() * 40 - 20
+      );
+      pods.mesh.rotation.y = Math.random() * Math.PI * 2;
+      const scale = 0.7 + Math.random() * 0.3;
+      pods.mesh.scale.set(scale, scale, scale);
+      scene.add(pods.mesh);
+      alienFlowers.push(pods);
     }
 
     // Lighting
