@@ -6,6 +6,7 @@ import styles from "@/app/page.module.css";
 import { GardenBackground } from "@/components/GardenBackground";
 import { FriendSearch } from "@/components/FriendSearch";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/providers/UserProvider";
 
 export function MoonPhaseViewer() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export function MoonPhaseViewer() {
   const [isHolding, setIsHolding] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [isFriendSearchOpen, setIsFriendSearchOpen] = useState(false);
+  const { gardenObjects } = useUser();
 
   useEffect(() => {
     const getTodaysMoonPhase = (): number => {
@@ -311,7 +313,7 @@ export function MoonPhaseViewer() {
 
           <div
             className={styles.moonPhaseScroller}
-            style={{ 
+            style={{
               marginTop: "-50px",
               overflowX: "auto",
               overflowY: "hidden", // Prevent vertical scroll
@@ -322,7 +324,7 @@ export function MoonPhaseViewer() {
               paddingBottom: "20px", // Prevent scrollbar from showing
             }}
           >
-            <div 
+            <div
               className={styles.moonPhaseContainer}
               style={{
                 display: "flex",
@@ -332,40 +334,42 @@ export function MoonPhaseViewer() {
                 paddingRight: "calc(50% - 25px)",
               }}
             >
-              {Array.from({ length: 84 }, (_, i) => currentDay - 28 + i).map((day) => (
-                <div
-                  key={day}
-                  className={`${styles.moonPhaseItem} ${
-                    day === currentDay ? styles.selected : ""
-                  }`}
-                  style={getMoonPhaseStyle(day)}
-                  onClick={() => handleMoonPhaseClick(day)}
-                >
-                  {day === currentDay && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "-25px",
-                        width: "100%",
-                        textAlign: "center",
-                        color: "white",
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {getDateDisplay(day)}
-                    </div>
-                  )}
-                  <Image
-                    src={`/moonphases/${getNormalizedDay(day + 14)}.png`}
-                    alt={`Moon phase day ${getNormalizedDay(day + 14)}`}
-                    width={50}
-                    height={50}
-                    priority
-                    draggable={false} // Prevent image dragging
-                  />
-                </div>
-              ))}
+              {Array.from({ length: 84 }, (_, i) => currentDay - 28 + i).map(
+                (day) => (
+                  <div
+                    key={day}
+                    className={`${styles.moonPhaseItem} ${
+                      day === currentDay ? styles.selected : ""
+                    }`}
+                    style={getMoonPhaseStyle(day)}
+                    onClick={() => handleMoonPhaseClick(day)}
+                  >
+                    {day === currentDay && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "-25px",
+                          width: "100%",
+                          textAlign: "center",
+                          color: "white",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {getDateDisplay(day)}
+                      </div>
+                    )}
+                    <Image
+                      src={`/moonphases/${getNormalizedDay(day + 14)}.png`}
+                      alt={`Moon phase day ${getNormalizedDay(day + 14)}`}
+                      width={50}
+                      height={50}
+                      priority
+                      draggable={false} // Prevent image dragging
+                    />
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
