@@ -167,6 +167,48 @@ export type Database = {
           },
         ]
       }
+      FriendRequests: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          declined_at: string | null
+          friend_user_id: string
+          id: string
+          requesting_user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          declined_at?: string | null
+          friend_user_id: string
+          id?: string
+          requesting_user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          declined_at?: string | null
+          friend_user_id?: string
+          id?: string
+          requesting_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FriendRequests_friend_user_id_fkey"
+            columns: ["friend_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "FriendRequests_requesting_user_id_fkey"
+            columns: ["requesting_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Notifications: {
         Row: {
           action_url: string | null
@@ -211,6 +253,38 @@ export type Database = {
           },
         ]
       }
+      Profiles: {
+        Row: {
+          created_at: string
+          id: string
+          phone_number: string | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          phone_number?: string | null
+          user_id?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phone_number?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       PushSubscriptions: {
         Row: {
           auth: string
@@ -242,6 +316,42 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "PushSubscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      UserFriendships: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "UserFriendships_friend_id_fkey"
+            columns: ["friend_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "UserFriendships_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
