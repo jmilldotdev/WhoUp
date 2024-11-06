@@ -3,8 +3,8 @@
 import { createContext, useContext, ReactNode } from "react";
 
 interface UserContextType {
-  userId: string;
-  username: string;
+  userId?: string;
+  username?: string;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -18,8 +18,8 @@ export function useUser() {
 }
 
 interface UserProviderProps {
-  userId: string;
-  username: string;
+  userId?: string;
+  username?: string;
   children: ReactNode;
 }
 

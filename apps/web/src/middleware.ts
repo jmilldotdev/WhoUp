@@ -1,5 +1,4 @@
-import { updateSession } from "./src/lib/supabase/middleware";
-import { createClient } from "./src/lib/supabase/server";
+import { updateSession } from "@/lib/supabase/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
@@ -9,11 +8,6 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/login/") || pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
-
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
 
   return await updateSession(request);
 }
