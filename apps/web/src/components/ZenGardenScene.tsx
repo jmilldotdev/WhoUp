@@ -413,9 +413,15 @@ export default function ZenGardenScene() {
       // Reset glow target when not hovering and clear previous hover
       if (intersects.length === 0) {
         glowTarget = 0;
-        if (hoveredRock) {
-          hoveredRock = null;
+        if (
+          hoveredRock &&
+          hoveredRock.material instanceof THREE.ShaderMaterial
+        ) {
+          if (hoveredRock.material.uniforms.glowIntensity) {
+            hoveredRock.material.uniforms.glowIntensity.value = 0; // Immediately reset glow
+          }
         }
+        hoveredRock = null;
         if (nameSprite) {
           nameSprite.material.opacity = 0;
         }
@@ -425,6 +431,14 @@ export default function ZenGardenScene() {
       if (intersects.length > 0 && intersects[0]?.object) {
         const newHoveredRock = intersects[0].object as THREE.Mesh;
         if (newHoveredRock !== hoveredRock) {
+          // Reset previous rock's glow if exists
+          if (
+            hoveredRock &&
+            hoveredRock.material instanceof THREE.ShaderMaterial &&
+            hoveredRock.material.uniforms.glowIntensity
+          ) {
+            hoveredRock.material.uniforms.glowIntensity.value = 0;
+          }
           hoveredRock = newHoveredRock;
           glowTarget = 0.5;
 

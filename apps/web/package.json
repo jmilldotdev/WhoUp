@@ -33,6 +33,7 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.170.0",
+    "three-csg-ts": "^3.2.0",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
