@@ -16,7 +16,6 @@ export function MoonPhaseViewer() {
   const [holdDuration, setHoldDuration] = useState(0);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   const [isHolding, setIsHolding] = useState(false);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [isFriendSearchOpen, setIsFriendSearchOpen] = useState(false);
 
@@ -139,13 +138,13 @@ export function MoonPhaseViewer() {
     const timer = setInterval(() => {
       setHoldDuration((prev) => {
         const newDuration = prev + 0.1;
-        if (newDuration >= 5) {
+        if (newDuration >= 2.1) {
           clearInterval(timer);
+          setIsHolding(false);
           setFadeOut(true);
-          // Delay the redirect to allow for fade animation
           setTimeout(() => {
             router.push("/zengarden");
-          }, 1000); // 1 second fade out
+          }, 1000);
         }
         return newDuration;
       });
@@ -236,7 +235,7 @@ export function MoonPhaseViewer() {
                 <div
                   style={{
                     position: "absolute",
-                    top: "40%",
+                    top: "calc(50% - 50px)",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     width: "300px",
@@ -252,7 +251,7 @@ export function MoonPhaseViewer() {
                 <svg
                   style={{
                     position: "absolute",
-                    top: "40%",
+                    top: "calc(50% - 50px)",
                     left: "50%",
                     transform: "translate(-50%, -50%) rotate(-90deg)",
                     width: "300px",
@@ -269,7 +268,7 @@ export function MoonPhaseViewer() {
                     strokeWidth="6"
                     fill="none"
                     strokeDasharray="929.91"
-                    strokeDashoffset={929.91 * (1 - holdDuration / 5)}
+                    strokeDashoffset={929.91 * (1 - holdDuration / 2)}
                     style={{
                       transition: "stroke-dashoffset 0.1s linear",
                       filter: "blur(1px)",
@@ -288,57 +287,85 @@ export function MoonPhaseViewer() {
               onMouseDown={handleRockMouseDown}
               onMouseUp={handleRockMouseUp}
               onMouseLeave={handleRockMouseUp}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                handleRockMouseDown();
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleRockMouseUp();
+              }}
+              draggable={false}
               style={{
                 cursor: "pointer",
                 position: "relative",
                 zIndex: 1,
                 animation:
-                  holdDuration >= 3
-                    ? `shake${Math.min(Math.floor((holdDuration - 3) * 2) + 1, 4)} 0.1s linear infinite`
+                  holdDuration >= 1.2
+                    ? `shake${Math.min(Math.floor((holdDuration - 1.2) * 2) + 1, 4)} 0.1s linear infinite`
                     : "",
+                transform: "translate(-50%, -50%)",
               }}
             />
           </div>
 
           <div
             className={styles.moonPhaseScroller}
-            style={{ marginTop: "-50px" }}
+            style={{ 
+              marginTop: "-50px",
+              overflowX: "auto",
+              overflowY: "hidden", // Prevent vertical scroll
+              WebkitOverflowScrolling: "touch", // Smooth scroll on iOS
+              scrollbarWidth: "none", // Hide scrollbar on Firefox
+              msOverflowStyle: "none", // Hide scrollbar on IE/Edge
+              width: "100%",
+              paddingBottom: "20px", // Prevent scrollbar from showing
+            }}
           >
-            <div className={styles.moonPhaseContainer}>
-              {/* Modify the array to show more phases before and after */}
-              {Array.from({ length: 84 }, (_, i) => currentDay - 28 + i).map(
-                (day) => (
-                  <div
-                    key={day}
-                    className={`${styles.moonPhaseItem} ${day === currentDay ? styles.selected : ""}`}
-                    style={getMoonPhaseStyle(day)}
-                    onClick={() => handleMoonPhaseClick(day)}
-                  >
-                    {day === currentDay && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "-25px",
-                          width: "100%",
-                          textAlign: "center",
-                          color: "white",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {getDateDisplay(day)}
-                      </div>
-                    )}
-                    <Image
-                      src={`/moonphases/${getNormalizedDay(day + 14)}.png`}
-                      alt={`Moon phase day ${getNormalizedDay(day + 14)}`}
-                      width={50}
-                      height={50}
-                      priority
-                    />
-                  </div>
-                )
-              )}
+            <div 
+              className={styles.moonPhaseContainer}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                minWidth: "max-content", // Ensure container fits all moons
+                paddingLeft: "calc(50% - 25px)", // Center the current moon
+                paddingRight: "calc(50% - 25px)",
+              }}
+            >
+              {Array.from({ length: 84 }, (_, i) => currentDay - 28 + i).map((day) => (
+                <div
+                  key={day}
+                  className={`${styles.moonPhaseItem} ${
+                    day === currentDay ? styles.selected : ""
+                  }`}
+                  style={getMoonPhaseStyle(day)}
+                  onClick={() => handleMoonPhaseClick(day)}
+                >
+                  {day === currentDay && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "-25px",
+                        width: "100%",
+                        textAlign: "center",
+                        color: "white",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {getDateDisplay(day)}
+                    </div>
+                  )}
+                  <Image
+                    src={`/moonphases/${getNormalizedDay(day + 14)}.png`}
+                    alt={`Moon phase day ${getNormalizedDay(day + 14)}`}
+                    width={50}
+                    height={50}
+                    priority
+                    draggable={false} // Prevent image dragging
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -442,6 +469,9 @@ export function MoonPhaseViewer() {
           50% {
             transform: scale(1.05);
           }
+        }
+        .moonPhaseScroller::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </>
