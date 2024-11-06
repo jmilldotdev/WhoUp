@@ -791,11 +791,3 @@ ADD
 
 ALTER TABLE
     "public"."Profiles" validate constraint "username_length_check";
-
-ALTER TABLE
-    "public"."Profiles"
-ADD
-    CONSTRAINT username_unique UNIQUE (username);
-
-ALTER TABLE
-    "public"."Profiles" validate constraint "username_unique";
