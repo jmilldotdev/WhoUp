@@ -2,6 +2,7 @@
 
 import InstallPrompt from "@/components/InstallPrompt";
 import PushNotificationManager from "@/components/PushNotificationManager";
+import { BroadcastDialog } from "@/components/BroadcastDialog";
 
 const TestPage = () => {
   return (
@@ -10,6 +11,7 @@ const TestPage = () => {
         <div>TestPage</div>
         <PushNotificationManager />
         <InstallPrompt />
+        <BroadcastDialog />
       </div>
     </div>
   );

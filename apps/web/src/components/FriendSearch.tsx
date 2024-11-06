@@ -1,55 +1,36 @@
+"use client";
+
 import { useState } from "react";
 import styles from "@/app/settings/settings.module.css";
-
-interface User {
-  id: string;
-  username: string;
-  status?: "pending" | "friend";
-}
+import { createFriendRequest } from "@/actions/friendships";
+import { useUser } from "@/providers/UserProvider";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onFriendAdded?: () => void;
 }
 
-export function FriendSearch({ isOpen, onClose }: Props) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [friends, setFriends] = useState<User[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+export function FriendSearch({ isOpen, onClose, onFriendAdded }: Props) {
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { userId } = useUser();
 
-  const searchUsers = async (query: string) => {
-    setIsSearching(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const mockResults = [
-      { id: "1", username: "user1" },
-      { id: "2", username: "user2" },
-      { id: "3", username: "user3" },
-    ].filter((user) =>
-      user.username.toLowerCase().includes(query.toLowerCase())
-    );
-    setSearchResults(mockResults);
-    setIsSearching(false);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    if (query.length >= 2) {
-      searchUsers(query);
-    } else {
-      setSearchResults([]);
+    try {
+      await createFriendRequest(userId, username);
+      setUsername("");
+      onFriendAdded?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add friend");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const addFriend = (user: User) => {
-    setFriends((prevFriends) => [
-      ...prevFriends,
-      { ...user, status: "friend" },
-    ]);
-    setSearchResults((prevResults) =>
-      prevResults.filter((result) => result.id !== user.id)
-    );
   };
 
   if (!isOpen) return null;
@@ -62,51 +43,25 @@ export function FriendSearch({ isOpen, onClose }: Props) {
       }}
     >
       <div className={`${styles.container} ${styles.overlayContainer}`}>
-        <h2 className={styles.subtitle}>Friends</h2>
-        <div className={styles.searchSection}>
+        <h2 className={styles.subtitle}>Add Friend</h2>
+        <form onSubmit={handleSubmit} className={styles.searchSection}>
           <input
             type="text"
-            placeholder="Search for friends..."
-            value={searchQuery}
-            onChange={handleSearch}
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className={styles.searchInput}
             autoFocus
           />
-
-          <div className={styles.searchResults}>
-            {isSearching ? (
-              <div className={styles.loading}>Searching...</div>
-            ) : (
-              searchResults.map((user) => (
-                <div key={user.id} className={styles.userCard}>
-                  <div className={styles.userInfo}>
-                    <div className={styles.username}>{user.username}</div>
-                  </div>
-                  <button
-                    className={styles.addButton}
-                    onClick={() => addFriend(user)}
-                  >
-                    Add Friend
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className={styles.friendsSection}>
-          {friends.length === 0 ? (
-            <div className={styles.emptyState}>No friends added yet</div>
-          ) : (
-            <div className={styles.friendsList}>
-              {friends.map((friend) => (
-                <div key={friend.id} className={styles.friendCard}>
-                  <div className={styles.username}>{friend.username}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+          {error && <div className={styles.error}>{error}</div>}
+          <button
+            type="submit"
+            className={styles.addButton}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Adding..." : "Add Friend"}
+          </button>
+        </form>
       </div>
     </div>
   );
