@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Water } from "three/examples/jsm/objects/Water.js";
@@ -14,17 +14,28 @@ import Link from "next/link";
 import { QuantumMonolith } from "./QuantumMonolith";
 import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
 import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
+import { useRouter } from "next/navigation";
 interface Friend {
   name: string;
   phone: string;
 }
 
 export default function ZenGardenScene() {
+  const [fadeOut, setFadeOut] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   let glowTarget = 0;
   let currentGlow = 0;
   const glowSpeed = 0.1; // Adjust this value to control transition speed
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setFadeOut(true);
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
+  };
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -570,7 +581,6 @@ export default function ZenGardenScene() {
       alienFlowers.push(nebulaFlower);
     }
 
-
     // Add crystal trees
     for (let i = 0; i < 2; i++) {
       const tree = new AlienCrystalTree();
@@ -702,7 +712,7 @@ export default function ZenGardenScene() {
   return (
     <div style={{ position: "relative" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100vh" }} />
-      <Link href="/">
+      <div onClick={handleHomeClick}>
         <div
           style={{
             position: "absolute",
@@ -716,6 +726,7 @@ export default function ZenGardenScene() {
             boxShadow: "0 0 10px 5px rgba(255, 255, 255, 0.8)",
             transition: "opacity 0.3s, transform 0.3s",
             animation: "pulse 1.5s infinite",
+            cursor: "pointer",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.opacity = "1";
@@ -737,7 +748,23 @@ export default function ZenGardenScene() {
             }}
           />
         </div>
-      </Link>
+      </div>
+
+      {/* Add fade transition overlay */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "white",
+          opacity: fadeOut ? 1 : 0,
+          pointerEvents: fadeOut ? "all" : "none",
+          transition: "opacity 1s ease-in-out",
+          zIndex: 9999,
+        }}
+      />
 
       <style jsx>{`
         @keyframes pulse {

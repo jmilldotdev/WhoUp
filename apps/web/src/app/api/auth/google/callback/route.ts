@@ -7,8 +7,12 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
 
   if (code) {
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+
+    // Exchange the code for a session
     await supabase.auth.exchangeCodeForSession(code);
+    return NextResponse.redirect("/");
   }
 
   // URL to redirect to after sign in process completes
