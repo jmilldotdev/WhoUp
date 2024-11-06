@@ -3,14 +3,16 @@ create table "public"."BroadcastUsers" (
     "created_at" timestamp with time zone not null default now(),
     "user_id" uuid not null default gen_random_uuid(),
     "broadcast_id" uuid not null default gen_random_uuid(),
-    "is_active" boolean not null default true
 );
 
 create table "public"."Broadcasts" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone not null default now(),
     "is_active" boolean not null default true,
-    "user_id" uuid not null default gen_random_uuid()
+    "user_id" uuid not null default gen_random_uuid(),
+    "topic" text not null,
+    "is_public" boolean not null default false,
+    "is_targeted" boolean not null default false
 );
 
 create table "public"."ConnectionInstance" (
