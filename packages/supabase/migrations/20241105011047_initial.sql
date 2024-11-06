@@ -783,3 +783,19 @@ grant truncate on table "public"."UserFriendships" to "service_role";
 grant
 update
     on table "public"."UserFriendships" to "service_role";
+
+ALTER TABLE
+    "public"."Profiles"
+ADD
+    CONSTRAINT username_length_check CHECK (char_length(username) <= 32);
+
+ALTER TABLE
+    "public"."Profiles" validate constraint "username_length_check";
+
+ALTER TABLE
+    "public"."Profiles"
+ADD
+    CONSTRAINT username_unique UNIQUE (username);
+
+ALTER TABLE
+    "public"."Profiles" validate constraint "username_unique";
