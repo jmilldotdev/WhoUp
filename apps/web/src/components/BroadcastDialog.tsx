@@ -24,6 +24,7 @@ export function BroadcastDialog() {
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (!userId) return;
     e.preventDefault();
     setIsLoading(true);
 
@@ -81,4 +82,4 @@ export function BroadcastDialog() {
       </DialogContent>
     </Dialog>
   );
-} 
+}
