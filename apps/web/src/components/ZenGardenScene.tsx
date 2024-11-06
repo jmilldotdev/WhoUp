@@ -10,7 +10,6 @@ import { AlienPrismFlower } from "@/components/Flowers/AlienPrismFlower";
 import { AlienNebulaFlower } from "@/components/Flowers/AlienNebulaFlower";
 import { AlienVortexFlower } from "@/components/Flowers/AlienVortexFlower";
 import { AlienFlower } from "@/components/Flowers/AlienFlower";
-import Link from "next/link";
 import { QuantumMonolith } from "./QuantumMonolith";
 import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
 import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
