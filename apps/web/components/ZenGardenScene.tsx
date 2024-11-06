@@ -5,8 +5,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Water } from "three/examples/jsm/objects/Water.js";
 import { AlienFlower } from "./AlienFlower";
-import { Home } from "lucide-react";
 import Link from "next/link";
+import { QuantumMonolith } from "./QuantumMonolith";
 
 interface Friend {
   name: string;
@@ -320,26 +320,28 @@ export default function ZenGardenScene() {
 
     // Modified createRock function
     const createRock = (friend: Friend, index: number) => {
-      const rockGeometry = new THREE.DodecahedronGeometry(Math.random() * 1 + 1.5);
+      const rockGeometry = new THREE.DodecahedronGeometry(
+        Math.random() * 1 + 1.5
+      );
       const rockMaterial = rockShaderMaterial.clone();
       const rock = new THREE.Mesh(rockGeometry, rockMaterial);
-      
+
       // Position rocks in a circle
       const angle = (index / friends.length) * Math.PI * 2;
       const radius = 15;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       rock.position.set(x, Math.random() * 2 - 3, z);
-      
+
       rock.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
         Math.random() * Math.PI
       );
-      
+
       // Add friend data to the rock object
       (rock as any).userData = { friend };
-      
+
       scene.add(rock);
       return rock;
     };
@@ -349,44 +351,44 @@ export default function ZenGardenScene() {
 
     // Update the createNameSprite function to add text glow
     const createNameSprite = (text: string) => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
       canvas.width = 512;
       canvas.height = 128;
-      
+
       if (context) {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // Add glow effect
-        context.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        context.shadowColor = "rgba(255, 255, 255, 0.8)";
         context.shadowBlur = 20;
         context.shadowOffsetX = 0;
         context.shadowOffsetY = 0;
-        
+
         // First pass - draw the glow
-        context.font = 'Bold 48px Arial';
-        context.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
+        context.font = "Bold 48px Arial";
+        context.fillStyle = "rgba(255, 255, 255, 0.5)";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
         context.fillText(text, canvas.width / 2, canvas.height / 2);
-        
+
         // Second pass - draw the text
-        context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        context.shadowColor = "rgba(0, 0, 0, 0.5)";
         context.shadowBlur = 4;
         context.shadowOffsetX = 2;
         context.shadowOffsetY = 2;
-        context.fillStyle = 'white';
+        context.fillStyle = "white";
         context.fillText(text, canvas.width / 2, canvas.height / 2);
       }
 
       const texture = new THREE.CanvasTexture(canvas);
-      const spriteMaterial = new THREE.SpriteMaterial({ 
+      const spriteMaterial = new THREE.SpriteMaterial({
         map: texture,
         transparent: true,
         opacity: 0,
         depthTest: false,
         depthWrite: false,
-        sizeAttenuation: false
+        sizeAttenuation: false,
       });
 
       const sprite = new THREE.Sprite(spriteMaterial);
@@ -408,16 +410,12 @@ export default function ZenGardenScene() {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(rocks);
 
-      // Reset all rocks' glow when not hovering
+      // Reset glow target when not hovering and clear previous hover
       if (intersects.length === 0) {
         glowTarget = 0;
-        // Reset glow for previously hovered rock
-        if (hoveredRock && 
-            hoveredRock.material instanceof THREE.ShaderMaterial && 
-            hoveredRock.material.uniforms?.glowIntensity) {
-          hoveredRock.material.uniforms.glowIntensity.value = 0;
+        if (hoveredRock) {
+          hoveredRock = null;
         }
-        hoveredRock = null;
         if (nameSprite) {
           nameSprite.material.opacity = 0;
         }
@@ -427,35 +425,28 @@ export default function ZenGardenScene() {
       if (intersects.length > 0 && intersects[0]?.object) {
         const newHoveredRock = intersects[0].object as THREE.Mesh;
         if (newHoveredRock !== hoveredRock) {
-          // Reset previous rock's glow if exists
-          if (hoveredRock && 
-              hoveredRock.material instanceof THREE.ShaderMaterial && 
-              hoveredRock.material.uniforms?.glowIntensity) {
-            hoveredRock.material.uniforms.glowIntensity.value = 0;
-          }
-          
           hoveredRock = newHoveredRock;
           glowTarget = 0.5;
-          
+
           // Show name sprite
           const friend = (hoveredRock as any).userData.friend;
           if (!nameSprite) {
             nameSprite = createNameSprite(friend.name);
             scene.add(nameSprite);
           }
-          
+
           nameSprite.material.map = createNameSprite(friend.name).material.map;
           nameSprite.position.set(0, 0, -1);
           nameSprite.position.unproject(camera);
           nameSprite.quaternion.copy(camera.quaternion);
-          
+
           // Fade in the name sprite
           nameSprite.material.opacity = 1;
         }
       }
     };
 
-    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
 
     // Create alien flowers
     const alienFlowers: AlienFlower[] = [];
@@ -501,11 +492,13 @@ export default function ZenGardenScene() {
 
       // Interpolate glow value
       currentGlow += (glowTarget - currentGlow) * glowSpeed;
-      
+
       // Apply interpolated glow to hovered rock
-      if (hoveredRock && 
-          hoveredRock.material instanceof THREE.ShaderMaterial && 
-          hoveredRock.material.uniforms?.glowIntensity) {
+      if (
+        hoveredRock &&
+        hoveredRock.material instanceof THREE.ShaderMaterial &&
+        hoveredRock.material.uniforms?.glowIntensity
+      ) {
         hoveredRock.material.uniforms.glowIntensity.value = currentGlow;
       }
 
@@ -563,11 +556,15 @@ export default function ZenGardenScene() {
 
     window.addEventListener("resize", handleResize);
 
+    // Create and add the monolith to the scene
+    const monolith = new QuantumMonolith();
+    scene.add(monolith.mesh);
+
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       mountRef.current?.removeChild(renderer.domElement);
-      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, []);
 
@@ -613,7 +610,8 @@ export default function ZenGardenScene() {
 
       <style jsx>{`
         @keyframes pulse {
-          0%, 100% {
+          0%,
+          100% {
             transform: scale(1);
           }
           50% {
