@@ -9,7 +9,7 @@ const devConfig: AppConfig = {
 };
 
 const prodConfig: AppConfig = {
-  authMethods: ["google", "apple"],
+  authMethods: ["google"],
 };
 
 export const CONFIG: AppConfig =
