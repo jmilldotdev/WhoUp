@@ -2,7 +2,7 @@ create table "public"."BroadcastUsers" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone not null default now(),
     "user_id" uuid not null default gen_random_uuid(),
-    "broadcast_id" uuid not null default gen_random_uuid(),
+    "broadcast_id" uuid not null default gen_random_uuid()
 );
 
 create table "public"."Broadcasts" (
