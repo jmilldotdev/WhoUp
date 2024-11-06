@@ -39,18 +39,27 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          is_public: boolean
+          is_targeted: boolean
+          topic: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           is_active?: boolean
+          is_public?: boolean
+          is_targeted?: boolean
+          topic: string
           user_id?: string
         }
         Update: {
           created_at?: string
           id?: string
           is_active?: boolean
+          is_public?: boolean
+          is_targeted?: boolean
+          topic?: string
           user_id?: string
         }
         Relationships: [
@@ -68,21 +77,18 @@ export type Database = {
           broadcast_id: string
           created_at: string
           id: string
-          is_active: boolean
           user_id: string
         }
         Insert: {
           broadcast_id?: string
           created_at?: string
           id?: string
-          is_active?: boolean
           user_id?: string
         }
         Update: {
           broadcast_id?: string
           created_at?: string
           id?: string
-          is_active?: boolean
           user_id?: string
         }
         Relationships: [
