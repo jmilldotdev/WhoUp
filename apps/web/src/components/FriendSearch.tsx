@@ -18,6 +18,7 @@ export function FriendSearch({ isOpen, onClose, onFriendAdded }: Props) {
   const { userId } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (!userId) return;
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
