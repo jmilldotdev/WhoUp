@@ -347,6 +347,7 @@ export function MoonPhaseViewer() {
       <FriendSearch
         isOpen={isFriendSearchOpen}
         onClose={() => setIsFriendSearchOpen(false)}
+        onFriendAdded={() => setIsFriendSearchOpen(false)}
       />
 
       {/* White overlay for fade transition */}
