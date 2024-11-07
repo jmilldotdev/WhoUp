@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sky, Stars, Cloud } from "@react-three/drei";
+import { Sky, Stars, Cloud, OrbitControls } from "@react-three/drei";
 import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { extend } from "@react-three/fiber";
@@ -317,6 +317,19 @@ export function GardenBackground() {
       }}
     >
       <Canvas camera={{ position: [0, 20, 35], fov: 75 }}>
+        <OrbitControls
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true} // Ensure rotation is enabled
+          minDistance={10}
+          maxDistance={100} // Allow more distance for better navigation
+          minPolarAngle={0} // Allow full rotation vertically
+          maxPolarAngle={Math.PI} // Allow full rotation vertically
+          dampingFactor={0.1} // Increase damping for smoother controls
+          enableDamping={true}
+          rotateSpeed={0.5}
+        />
+
         <fog
           attach="fog"
           args={[sky3, 15, 50]} // color, near, far

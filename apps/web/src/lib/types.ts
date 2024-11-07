@@ -1,3 +1,5 @@
+import { Tables, TablesInsert } from "@repo/supabase/types";
+
 export const FLOWER_TYPES: string[] = [
   "BioluminescentFlower",
   "CrystalFlower",
@@ -8,3 +10,6 @@ export const FLOWER_TYPES: string[] = [
   "PrismFlower",
   "VortexFlower",
 ];
+
+export type GardenObject = Tables<"GardenObjects">;
+export type GardenObjectInsert = TablesInsert<"GardenObjects">;
