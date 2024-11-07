@@ -13,5 +13,5 @@ export const FLOWER_TYPES: string[] = [
 ];
 
 export type GardenObject = Tables<"GardenObjects">;
-
+export type Broadcast = Tables<"Broadcasts">;
 export type GardenObjectInsert = TablesInsert<"GardenObjects">;

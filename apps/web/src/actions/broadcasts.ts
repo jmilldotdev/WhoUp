@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { Broadcast } from "@/lib/types";
 
 interface CreateBroadcastParams {
   userId: string;
@@ -72,3 +73,24 @@ export async function closeBroadcast(broadcastId: string) {
   if (error) throw error;
   return broadcast;
 }
+
+export async function getCurrentBroadcast(userId: string): Promise<Broadcast | null> {
+  const supabase = await createClient();
+  console.log("userId", userId);
+
+  const { data: broadcast, error } = await supabase
+    .from("Broadcasts")
+    .select()
+    .eq("user_id", userId)
+    .eq("is_active", true)
+    .single();
+
+
+  if (error) {
+    console.error("Error fetching current broadcast:", error);
+    return null;
+  }
+
+  return broadcast;
+}
+
