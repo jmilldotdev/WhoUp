@@ -11,6 +11,9 @@ import { GiftButton } from "@/components/GiftButton";
 import { WritingButton } from "@/components/WritingButton";
 import { useUser } from "@/providers/UserProvider";
 import { GardenFlowers } from "@/components/GardenFlowers";
+import { useBroadcast } from "@/contexts/BroadcastContext";
+import { getCurrentBroadcast, closeBroadcast } from "@/actions/broadcasts";
+
 interface Friend {
   name: string;
   phone: string;
@@ -19,10 +22,11 @@ interface Friend {
 export default function ZenGardenScene() {
   const [fadeOut, setFadeOut] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+  const { currentBroadcast, setCurrentBroadcast } = useBroadcast();
   const mountRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { gardenObjects } = useUser();
-
+  const { userId } = useUser();
   let glowTarget = 0;
   let currentGlow = 0;
   const glowSpeed = 0.1; // Adjust this value to control transition speed
@@ -36,6 +40,22 @@ export default function ZenGardenScene() {
     setTimeout(() => {
       router.push("/");
     }, 1000);
+  };
+
+  const handleEndBroadcast = async () => {
+    if (!currentBroadcast) {
+      console.error("No current broadcast to end");
+      return;
+    }
+
+    try {
+      await closeBroadcast(currentBroadcast.id);
+      console.log("Broadcast ended successfully");
+      // Optionally, update the state to reflect that the broadcast has ended
+      setCurrentBroadcast(null);
+    } catch (error) {
+      console.error("Error ending broadcast:", error);
+    }
   };
 
   useEffect(() => {
@@ -488,7 +508,7 @@ export default function ZenGardenScene() {
       onFlowerClick: (text) => {
         setFlowerMessage(text);
         setShowFlowerMessage(true);
-      }
+      },
     });
 
     // Lighting
@@ -581,6 +601,7 @@ export default function ZenGardenScene() {
 
     // Add click handler for monolith
     const handleClick = (event: MouseEvent) => {
+      event.stopPropagation(); // Prevent the event from bubbling up
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -610,6 +631,29 @@ export default function ZenGardenScene() {
     window.addEventListener("click", handleClick);
     window.addEventListener("mousemove", handleMouseOver);
 
+    // Fetch the current broadcast topic from the database
+    const fetchBroadcast = async () => {
+      if (!userId) {
+        console.error("User ID is not available");
+        return;
+      }
+
+      try {
+        const broadcast = await getCurrentBroadcast(userId);
+        if (broadcast) {
+          console.log("Fetched broadcast:", broadcast);
+          // Update the state with the fetched broadcast
+          setCurrentBroadcast(broadcast);
+        } else {
+          console.log("No active broadcast found");
+        }
+      } catch (error) {
+        console.error("Error fetching broadcast:", error);
+      }
+    };
+
+    fetchBroadcast();
+
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -619,11 +663,74 @@ export default function ZenGardenScene() {
       window.removeEventListener("mousemove", handleMouseOver);
       gardenFlowers.cleanup();
     };
-  }, [gardenObjects]);
+  }, [gardenObjects, userId]);
 
   return (
     <div style={{ position: "relative" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100vh" }} />
+
+      {/* Display current broadcast message */}
+      {currentBroadcast && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            padding: "20px",
+            zIndex: 2000,
+            width: "90%",
+            maxWidth: "600px",
+            boxShadow:
+              "0 0 10px rgba(0, 0, 0, 0.1), 0 0 15px 5px rgba(255, 255, 255, 0.6)",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "60px", // Adjust size as needed
+                height: "60px",
+                borderRadius: "50%",
+                backgroundColor: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                boxShadow: "0 0 20px rgba(255, 255, 255, 0.8)", // Glow effect
+                marginBottom: "10px", // Space between image and text
+              }}
+            >
+              <img
+                src="/broadcast.png"
+                className="w-10 h-10"
+                style={{
+                  filter: "drop-shadow(0 0 10px rgba(255, 255, 255, 0.8))",
+                }}
+              />
+            </div>
+            <h2 className="font-mono text-xs">Now Broadcasting</h2>
+          </div>
+          <p className="font-mono mt-1">{currentBroadcast.topic}</p>
+          {currentBroadcast && (
+            <button
+              onClick={handleEndBroadcast}
+              className="bg-white text-black font-mono text-xs px-2 transition duration-300 ease-in-out  hover:shadow-[0_0_10px_rgba(255,255,255,0.8)]"
+            >
+              End Broadcast
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Button container */}
       {showButtons && (
@@ -697,7 +804,8 @@ export default function ZenGardenScene() {
             zIndex: 1000,
             width: "90%",
             maxWidth: "600px",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1), 0 0 15px 5px rgba(255, 255, 255, 0.6)",
+            boxShadow:
+              "0 0 10px rgba(0, 0, 0, 0.1), 0 0 15px 5px rgba(255, 255, 255, 0.6)",
           }}
         >
           <h2 className="font-mono text-white">Memory</h2>

@@ -1,12 +1,11 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sky, Stars, Cloud, OrbitControls } from "@react-three/drei";
+import { Stars, Cloud, OrbitControls } from "@react-three/drei";
 import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { extend } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
-import { MeshStandardMaterial } from "three";
 import { colorSets2 } from "../constants/skyColors";
 // Add this type declaration before the component
 declare global {
@@ -266,7 +265,6 @@ export function GardenBackground() {
     ground: string;
   } => {
     const hour = new Date().getHours();
-
     const timeSlot = Math.floor(hour / 2) % 12;
 
     // Base green color for ground

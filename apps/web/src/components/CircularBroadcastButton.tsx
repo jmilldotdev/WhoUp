@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useBroadcast } from "@/contexts/BroadcastContext";
 
 export function CircularBroadcastButton() {
   const { userId } = useUser();
+  const { setCurrentBroadcast } = useBroadcast();
   const [isPublic, setIsPublic] = useState(false);
   const [topic, setTopic] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,12 +23,13 @@ export function CircularBroadcastButton() {
     setIsLoading(true);
 
     try {
-      await createBroadcast({
+      const newBroadcast = await createBroadcast({
         userId,
         topic,
         isPublic,
       });
 
+      setCurrentBroadcast(newBroadcast);
       setOpen(false);
       setTopic("");
       setIsPublic(false);
