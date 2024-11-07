@@ -22,7 +22,7 @@ export function UsernameRequiredWrapper({
   const handleUsernameSet = async (newUsername: string) => {
     if (!userId) return;
     await updateUsername(userId, newUsername);
-    window.location.reload();
+    // window.location.reload();
   };
 
   if (showDialog) {
