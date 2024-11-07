@@ -1,13 +1,13 @@
-import { createPublicClient, toHex, http, Hex } from "viem";
+import { createPublicClient, toHex, http } from "viem";
 import { randomBytes } from "crypto";
-import { sepolia } from "viem/chains";
+import { lineaSepolia } from "viem/chains";
 import {
   createBundlerClient,
   createPaymasterClient,
 } from "viem/account-abstraction";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
 
-export const chain = sepolia;
+export const chain = lineaSepolia;
 
 export const BUNDLER_URL = process.env.NEXT_PUBLIC_BUNDLER_URL!;
 export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL!;
@@ -34,9 +34,7 @@ export const getFeePerGas = async () => {
   // The method for determining fee per gas is dependent on the bundler
   // implementation. For this reason, this is centralised here.
   const pimlicoClient = createPimlicoClient({
-    // @ts-ignore
     chain,
-    // @ts-ignore
     transport: http(BUNDLER_URL),
   });
 
@@ -44,8 +42,3 @@ export const getFeePerGas = async () => {
 
   return fast;
 };
-
-export const getExplorerUserOperationLink = (
-  chainId: number,
-  userOpHash: Hex
-) => `https://jiffyscan.xyz/userOpHash/${userOpHash}?network=sepolia`;
