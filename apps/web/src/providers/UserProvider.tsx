@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, ReactNode, useState } from "react";
-import { GardenObject } from "@/actions/gardenObjects";
+import { GardenObject } from "@/lib/types";
 
 interface UserContextType {
   userId?: string;
