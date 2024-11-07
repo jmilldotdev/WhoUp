@@ -15,7 +15,6 @@ import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
 import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
 import { useRouter } from "next/navigation";
 import { CircularBroadcastButton } from "@/components/CircularBroadcastButton";
-
 interface Friend {
   name: string;
   phone: string;
