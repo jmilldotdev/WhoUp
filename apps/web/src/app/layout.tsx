@@ -7,7 +7,6 @@ import { UsernameRequiredWrapper } from "@/components/UsernameRequiredWrapper";
 import { AuthRequired } from "@/components/auth/AuthRequired";
 import { Toaster } from "sonner";
 import { GardenObject, getUserGardenObjects } from "@/actions/gardenObjects";
-import { headers } from "next/headers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

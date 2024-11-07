@@ -17,7 +17,14 @@ import {
   publicClient,
   getFeePerGas,
 } from "@/lib/delegation/delegation-setup";
-import { type Address, type Hex, isAddressEqual, zeroAddress } from "viem";
+import {
+  type Address,
+  encodeAbiParameters,
+  encodeFunctionData,
+  type Hex,
+  isAddressEqual,
+  zeroAddress,
+} from "viem";
 
 /**
  * Create a new MetaMaskSmartAccount representing a Hybrid Delegator Smart
@@ -27,13 +34,28 @@ import { type Address, type Hex, isAddressEqual, zeroAddress } from "viem";
 export const createMetaMaskAccount = async () => {
   const owner = privateKeyToAccount(generatePrivateKey());
 
-  return await toMetaMaskSmartAccount({
+  const account = await toMetaMaskSmartAccount({
     client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [owner.address, [], [], []],
     deploySalt: createSalt(),
     signatory: { account: owner },
   });
+  return account;
+};
+
+export const createAdminDelegatorAccount = async () => {
+  const owner = privateKeyToAccount(
+    process.env.NEXT_PUBLIC_DELEGATOR_PRIVATE_KEY as Hex
+  );
+  const account = await toMetaMaskSmartAccount({
+    client: publicClient,
+    implementation: Implementation.Hybrid,
+    deployParams: [owner.address, [], [], []],
+    deploySalt: "0x",
+    signatory: { account: owner },
+  });
+  return account;
 };
 
 /**
@@ -50,9 +72,11 @@ export const createDelegation = async (
   // These caveats are allowing only a transfer of 0 ether to the zero address.
   // Not a very useful operation, but it demonstrates how caveats that can be
   // applied to a delegation.
-  const caveats = createCaveatBuilder(delegatorAccount.environment)
-    .addCaveat("allowedTargets", [zeroAddress])
-    .addCaveat("valueLte", 0n);
+  const caveats = createCaveatBuilder(delegatorAccount.environment).addCaveat(
+    "erc20TransferAmount",
+    process.env.NEXT_PUBLIC_ERC20_ADDRESS as Address,
+    10n
+  );
 
   const delegation = createRootDelegation(
     delegateAddress,
@@ -96,9 +120,24 @@ export const executeOnBehalfOfDelegator = async (
   // The action that the redeemer is executing on behalf of the delegator.
   const executions: ExecutionStruct[] = [
     {
-      target: zeroAddress,
-      value: 0n,
-      callData: "0x",
+      target: process.env.NEXT_PUBLIC_ERC20_ADDRESS as Address,
+      value: 10n,
+      callData: encodeFunctionData({
+        abi: [
+          {
+            name: "transfer",
+            type: "function",
+            inputs: [
+              { name: "recipient", type: "address" },
+              { name: "amount", type: "uint256" },
+            ],
+            outputs: [{ type: "bool" }],
+            stateMutability: "nonpayable",
+          },
+        ],
+        functionName: "transfer",
+        args: [delegation.delegate, 10n],
+      }),
     },
   ];
 

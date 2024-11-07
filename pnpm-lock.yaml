@@ -81,8 +81,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       permissionless:
-        specifier: ^0.2.15
-        version: 0.2.15(viem@2.21.42(typescript@5.5.4)(zod@3.23.8))
+        specifier: 0.2.10
+        version: 0.2.10(viem@2.21.42(typescript@5.5.4)(zod@3.23.8))
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -5728,10 +5728,10 @@ packages:
   perlin@1.0.0:
     resolution: {integrity: sha512-BRkCDN/XkRe42NoJFgqma0bWkdbq4ovwryGeGuIxCMblvNi2353g9QCZIHsRkpCrERauPMPzolSCOfhl0i1Zeg==}
 
-  permissionless@0.2.15:
-    resolution: {integrity: sha512-S5+FP9e6xY7AEC+9w4mJ66826Cn7gHqHxKMFopevM2+ZPTpYpvYnB4APLljNsCfuIqMVNutTbgcuLZTasNvMEQ==}
+  permissionless@0.2.10:
+    resolution: {integrity: sha512-l05ORtPTLo1B+36eHXSIsRAxHvUvsD9i2t12524NaWuwgAM8SMQX99FNWOQwNRb3oVIeYMXCygDXDdvyqwvNzA==}
     peerDependencies:
-      viem: ^2.21.22
+      viem: ^2.21.2
 
   picocolors@1.1.0:
     resolution: {integrity: sha512-TQ92mBOW0l3LeMeyLV6mzy/kWr8lkd/hp3mTg7wYK7zJhuBStmGMBG0BdeDZS/dZx1IukaX6Bk11zcln25o1Aw==}
@@ -10435,7 +10435,7 @@ snapshots:
 
   '@types/eslint@8.56.12':
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       '@types/json-schema': 7.0.15
 
   '@types/estree@0.0.39': {}
@@ -11000,7 +11000,7 @@ snapshots:
 
   acorn-walk@8.3.4:
     dependencies:
-      acorn: 8.12.1
+      acorn: 8.14.0
 
   acorn@8.12.1: {}
 
@@ -15374,7 +15374,7 @@ snapshots:
 
   perlin@1.0.0: {}
 
-  permissionless@0.2.15(viem@2.21.42(typescript@5.5.4)(zod@3.23.8)):
+  permissionless@0.2.10(viem@2.21.42(typescript@5.5.4)(zod@3.23.8)):
     dependencies:
       viem: 2.21.42(typescript@5.5.4)(zod@3.23.8)
 
@@ -16969,7 +16969,7 @@ snapshots:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
       '@types/node': 20.16.5
-      acorn: 8.12.1
+      acorn: 8.14.0
       acorn-walk: 8.3.4
       arg: 4.1.3
       create-require: 1.1.1
