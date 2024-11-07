@@ -217,13 +217,7 @@ export function MoonPhaseViewer() {
           {currentTime && getFormattedDateTime()}
         </div>
 
-        <div
-          className={styles.interactiveArea}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
+        <div className={styles.interactiveArea}>
           <div className={styles.rockContainer}>
             {isHolding && (
               <>
@@ -291,6 +285,7 @@ export function MoonPhaseViewer() {
                 e.preventDefault();
                 handleRockMouseUp();
               }}
+              onContextMenu={(e) => e.preventDefault()}
               draggable={false}
               style={{
                 cursor: "pointer",
@@ -301,6 +296,8 @@ export function MoonPhaseViewer() {
                     ? `shake${Math.min(Math.floor((holdDuration - 1.2) * 2) + 1, 4)} 0.1s linear infinite`
                     : "",
                 transform: "translate(-50%, -50%)",
+                userSelect: "none", // Disable text selection
+                touchAction: "none", // Disable default touch actions
               }}
             />
           </div>
@@ -309,13 +306,14 @@ export function MoonPhaseViewer() {
             className={styles.moonPhaseScroller}
             style={{
               marginTop: "-50px",
-              overflowX: "auto",
+              overflowX: "hidden", // Change to hidden to prevent interaction
               overflowY: "hidden", // Prevent vertical scroll
               WebkitOverflowScrolling: "touch", // Smooth scroll on iOS
               scrollbarWidth: "none", // Hide scrollbar on Firefox
               msOverflowStyle: "none", // Hide scrollbar on IE/Edge
               width: "100%",
               paddingBottom: "20px", // Prevent scrollbar from showing
+              touchAction: "none", // Disable touch actions
             }}
           >
             <div
@@ -336,7 +334,6 @@ export function MoonPhaseViewer() {
                       day === currentDay ? styles.selected : ""
                     }`}
                     style={getMoonPhaseStyle(day)}
-                    onClick={() => handleMoonPhaseClick(day)}
                   >
                     {day === currentDay && (
                       <div

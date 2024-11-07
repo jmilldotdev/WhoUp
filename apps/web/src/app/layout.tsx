@@ -6,7 +6,8 @@ import { UserProvider } from "@/providers/UserProvider";
 import { UsernameRequiredWrapper } from "@/components/UsernameRequiredWrapper";
 import { AuthRequired } from "@/components/auth/AuthRequired";
 import { Toaster } from "sonner";
-import { GardenObject, getUserGardenObjects } from "@/actions/gardenObjects";
+import { getUserGardenObjects } from "@/actions/gardenObjects";
+import { GardenObject } from "@/lib/types";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

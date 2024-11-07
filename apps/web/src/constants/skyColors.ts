@@ -98,15 +98,88 @@ export const colorSets = [
 ];
 
 export const colorSets2 = [
-  { sky1: "#E6F3FF", sky2: "#B3D9FF", sky3: "#80BFFF", sky4: "#4DA6FF", ground: baseGround }, // Lightest blue
-  { sky1: "#CCE6FF", sky2: "#99CCFF", sky3: "#66B3FF", sky4: "#3399FF", ground: baseGround },
-  { sky1: "#B3D9FF", sky2: "#80BFFF", sky3: "#4DA6FF", sky4: "#1A8CFF", ground: baseGround },
-  { sky1: "#99CCFF", sky2: "#66B3FF", sky3: "#3399FF", sky4: "#0073E6", ground: baseGround },
-  { sky1: "#80BFFF", sky2: "#4DA6FF", sky3: "#1A8CFF", sky4: "#005CB3", ground: baseGround },
-  { sky1: "#66B3FF", sky2: "#3399FF", sky3: "#0073E6", sky4: "#004C99", ground: baseGround },
-  { sky1: "#4DA6FF", sky2: "#1A8CFF", sky3: "#005CB3", sky4: "#003D73", ground: baseGround },
-  { sky1: "#3399FF", sky2: "#0073E6", sky3: "#004C99", sky4: "#002E59", ground: baseGround },
-  { sky1: "#1A8CFF", sky2: "#005CB3", sky3: "#003D73", sky4: "#001F3F", ground: baseGround },
-  { sky1: "#0073E6", sky2: "#004C99", sky3: "#002E59", sky4: "#001526", ground: baseGround },
-  { sky1: "#005CB3", sky2: "#003D73", sky3: "#001F3F", sky4: "#000C13", ground: baseGround }, // Darkest blue
+  {
+    sky1: "#E6F3FF",
+    sky2: "#B3D9FF",
+    sky3: "#80BFFF",
+    sky4: "#4DA6FF",
+    ground: baseGround,
+  }, // Lightest blue
+  {
+    sky1: "#CCE6FF",
+    sky2: "#99CCFF",
+    sky3: "#66B3FF",
+    sky4: "#3399FF",
+    ground: baseGround,
+  },
+  {
+    sky1: "#B3D9FF",
+    sky2: "#80BFFF",
+    sky3: "#4DA6FF",
+    sky4: "#1A8CFF",
+    ground: baseGround,
+  },
+  {
+    sky1: "#99CCFF",
+    sky2: "#66B3FF",
+    sky3: "#3399FF",
+    sky4: "#0073E6",
+    ground: baseGround,
+  },
+  {
+    sky1: "#80BFFF",
+    sky2: "#4DA6FF",
+    sky3: "#1A8CFF",
+    sky4: "#005CB3",
+    ground: baseGround,
+  },
+  {
+    sky1: "#66B3FF",
+    sky2: "#3399FF",
+    sky3: "#0073E6",
+    sky4: "#004C99",
+    ground: baseGround,
+  },
+  {
+    sky1: "#4DA6FF",
+    sky2: "#1A8CFF",
+    sky3: "#005CB3",
+    sky4: "#003D73",
+    ground: baseGround,
+  },
+  {
+    sky1: "#3399FF",
+    sky2: "#0073E6",
+    sky3: "#004C99",
+    sky4: "#002E59",
+    ground: baseGround,
+  },
+  {
+    sky1: "#0073E6",
+    sky2: "#004C99",
+    sky3: "#002E59",
+    sky4: "#001526",
+    ground: baseGround,
+  },
+  {
+    sky1: "#1A8CFF",
+    sky2: "#005CB3",
+    sky3: "#003D73",
+    sky4: "#001F3F",
+    ground: baseGround,
+  },
+  {
+    sky1: "#0073E6",
+    sky2: "#004C99",
+    sky3: "#002E59",
+    sky4: "#001526",
+    ground: baseGround,
+  },
+  {
+    sky1: "#005CB3",
+    sky2: "#003D73",
+    sky3: "#001F3F",
+    sky4: "#000C13",
+    ground: baseGround,
+  },
 ];
