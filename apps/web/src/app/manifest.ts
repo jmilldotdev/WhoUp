@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "WhoUp",
     short_name: "WhoUp",
-    description: "Reprogram your doomscrolling with the mindful monolith.",
+    description: "Reprogram your doomscrolling.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
