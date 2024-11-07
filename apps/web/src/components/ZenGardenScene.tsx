@@ -15,6 +15,10 @@ import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
 import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
 import { useRouter } from "next/navigation";
 import { CircularBroadcastButton } from "@/components/CircularBroadcastButton";
+import { GiftButton } from "@/components/GiftButton";
+import { WritingButton } from "@/components/WritingButton";
+import { useUser } from "@/providers/UserProvider";
+import { GardenFlowers } from "./GardenFlowers";
 interface Friend {
   name: string;
   phone: string;
@@ -25,6 +29,7 @@ export default function ZenGardenScene() {
   const [showButtons, setShowButtons] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { gardenObjects } = useUser();
 
   let glowTarget = 0;
   let currentGlow = 0;
@@ -481,136 +486,11 @@ export default function ZenGardenScene() {
     window.addEventListener("mousemove", onMouseMove);
 
     // Create alien flowers
-    const alienFlowers: (
-      | AlienFlower
-      | AlienCrystalFlower
-      | AlienBioluminescentFlower
-      | AlienPrismFlower
-      | AlienVortexFlower
-      | AlienNebulaFlower
-      | AlienCrystalTree
-      | AlienLightPods
-    )[] = [];
-
-    // Create regular alien flowers
-    for (let i = 0; i < 2; i++) {
-      const flower = new AlienFlower();
-      flower.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      flower.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.6 + Math.random() * 0.3;
-      flower.mesh.scale.set(scale, scale, scale);
-      scene.add(flower.mesh);
-      alienFlowers.push(flower);
-    }
-
-    // Add crystal flowers
-    for (let i = 0; i < 2; i++) {
-      const crystalFlower = new AlienCrystalFlower();
-      crystalFlower.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      crystalFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.8 + Math.random() * 0.3;
-      crystalFlower.mesh.scale.set(scale, scale, scale);
-      scene.add(crystalFlower.mesh);
-      alienFlowers.push(crystalFlower);
-    }
-
-    // Add bioluminescent flowers
-    for (let i = 0; i < 2; i++) {
-      const bioFlower = new AlienBioluminescentFlower();
-      bioFlower.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      bioFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.7 + Math.random() * 0.3;
-      bioFlower.mesh.scale.set(scale, scale, scale);
-      scene.add(bioFlower.mesh);
-      alienFlowers.push(bioFlower);
-    }
-
-    // Add prism flowers
-    for (let i = 0; i < 2; i++) {
-      const prismFlower = new AlienPrismFlower();
-      prismFlower.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      prismFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.7 + Math.random() * 0.3;
-      prismFlower.mesh.scale.set(scale, scale, scale);
-      scene.add(prismFlower.mesh);
-      alienFlowers.push(prismFlower);
-    }
-
-    // Add vortex flowers
-    for (let i = 0; i < 2; i++) {
-      const vortexFlower = new AlienVortexFlower();
-      vortexFlower.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      vortexFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.7 + Math.random() * 0.3;
-      vortexFlower.mesh.scale.set(scale, scale, scale);
-      scene.add(vortexFlower.mesh);
-      alienFlowers.push(vortexFlower);
-    }
-
-    // Add nebula flowers
-    for (let i = 0; i < 2; i++) {
-      const nebulaFlower = new AlienNebulaFlower();
-      nebulaFlower.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      nebulaFlower.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.7 + Math.random() * 0.3;
-      nebulaFlower.mesh.scale.set(scale, scale, scale);
-      scene.add(nebulaFlower.mesh);
-      alienFlowers.push(nebulaFlower);
-    }
-
-    // Add crystal trees
-    for (let i = 0; i < 2; i++) {
-      const tree = new AlienCrystalTree();
-      tree.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      tree.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.7 + Math.random() * 0.3;
-      tree.mesh.scale.set(scale, scale, scale);
-      scene.add(tree.mesh);
-      alienFlowers.push(tree);
-    }
-
-    // Add light pods
-    for (let i = 0; i < 2; i++) {
-      const pods = new AlienLightPods();
-      pods.mesh.position.set(
-        Math.random() * 40 - 20,
-        -4.2,
-        Math.random() * 40 - 20
-      );
-      pods.mesh.rotation.y = Math.random() * Math.PI * 2;
-      const scale = 0.7 + Math.random() * 0.3;
-      pods.mesh.scale.set(scale, scale, scale);
-      scene.add(pods.mesh);
-      alienFlowers.push(pods);
-    }
+    const gardenFlowers = new GardenFlowers({
+      scene,
+      camera,
+      gardenObjects,
+    });
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -675,9 +555,7 @@ export default function ZenGardenScene() {
       }
 
       // Animate alien flowers
-      alienFlowers.forEach((flower) => {
-        flower.animate(Date.now());
-      });
+      gardenFlowers.animate(Date.now());
 
       // Update name sprite orientation
       if (nameSprite) {
@@ -740,6 +618,7 @@ export default function ZenGardenScene() {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("click", handleClick);
       window.removeEventListener("mousemove", handleMouseOver);
+      gardenFlowers.cleanup();
     };
   }, []);
 
@@ -762,106 +641,8 @@ export default function ZenGardenScene() {
           }}
         >
           <CircularBroadcastButton />
-
-          <button
-            style={{
-              width: "50px", // Set width
-              height: "50px", // Set height to match width
-              margin: "10px",
-              padding: "0", // Remove padding to maintain circle shape
-              border: "none",
-              borderRadius: "50%", // Make buttons circular
-              background: "rgba(255, 255, 255, 0.8)", // Increased opacity
-              color: "#00ffff",
-              cursor: "pointer",
-              boxShadow: "0 0 15px 5px rgba(0, 255, 255, 0.5)", // Smooth glowing effect
-              transition: "background 0.3s, box-shadow 0.3s",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
-              e.currentTarget.style.boxShadow =
-                "0 0 20px 10px rgba(0, 255, 255, 0.7)"; // Enhanced glow on hover
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
-              e.currentTarget.style.boxShadow =
-                "0 0 15px 5px rgba(0, 255, 255, 0.5)"; // Original glow
-            }}
-            onClick={(event) => {
-              event.stopPropagation();
-              console.log("Button 2 clicked");
-            }}
-          >
-            <img
-              src="/gift.png"
-              alt="2"
-              style={{
-                width: "100%",
-                height: "100%",
-                opacity: 0.8,
-                transition: "opacity 0.3s ease", // Add smooth transition
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "1"; // Change opacity on hover
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "0.8"; // Revert opacity when not hovering
-              }}
-            />
-          </button>
-
-          <button
-            style={{
-              width: "50px", // Set width
-              height: "50px", // Set height to match width
-              margin: "10px",
-              padding: "0", // Remove padding to maintain circle shape
-              border: "none",
-              borderRadius: "50%", // Make buttons circular
-              background: "rgba(255, 255, 255, 0.8)", // Increased opacity
-              color: "#00ffff",
-              cursor: "pointer",
-              boxShadow: "0 0 15px 5px rgba(0, 255, 255, 0.5)", // Smooth glowing effect
-              transition: "background 0.3s, box-shadow 0.3s",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
-              e.currentTarget.style.boxShadow =
-                "0 0 20px 10px rgba(0, 255, 255, 0.7)"; // Enhanced glow on hover
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
-              e.currentTarget.style.boxShadow =
-                "0 0 15px 5px rgba(0, 255, 255, 0.5)"; // Original glow
-            }}
-            onClick={(event) => {
-              event.stopPropagation();
-              console.log("Button 3 clicked");
-            }}
-          >
-            <img
-              src="/write.png"
-              alt="2"
-              style={{
-                width: "100%",
-                height: "100%",
-                opacity: 0.8,
-                transition: "opacity 0.3s ease", // Add smooth transition
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "1"; // Change opacity on hover
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "0.8"; // Revert opacity when not hovering
-              }}
-            />
-          </button>
+          <GiftButton />
+          <WritingButton />
         </div>
       )}
 

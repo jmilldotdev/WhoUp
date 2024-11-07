@@ -11,5 +11,7 @@ export const FLOWER_TYPES: string[] = [
   "VortexFlower",
 ];
 
+
 export type GardenObject = Tables<"GardenObjects">;
+
 export type GardenObjectInsert = TablesInsert<"GardenObjects">;
