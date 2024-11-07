@@ -6,99 +6,100 @@ export class AlienCrystalFlower {
   constructor() {
     this.mesh = new THREE.Group();
 
-    // Crystal core made of intersecting geometric shapes
-    const coreGroup = new THREE.Group();
-    const shapes = [
-      new THREE.OctahedronGeometry(0.4, 0),
-      new THREE.TetrahedronGeometry(0.5, 0),
-      new THREE.DodecahedronGeometry(0.3, 0),
-    ];
-
-    shapes.forEach((geometry, i) => {
-      const material = new THREE.MeshPhongMaterial({
-        color: 0x00ffff,
-        emissive: 0x00ffff,
-        emissiveIntensity: 0.8,
-        transparent: true,
-        opacity: 0.7,
-        shininess: 100,
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.set((i * Math.PI) / 2, (i * Math.PI) / 3, 0);
-      coreGroup.add(mesh);
-    });
-
-    coreGroup.position.y = 0.5;
-    this.mesh.add(coreGroup);
-
-    // Spiral crystal formations
-    const spiralCount = 3;
-    const pointsPerSpiral = 15;
-
-    for (let s = 0; s < spiralCount; s++) {
-      const spiralGroup = new THREE.Group();
-
-      for (let i = 0; i < pointsPerSpiral; i++) {
-        const t = i / pointsPerSpiral;
-        const angle = t * Math.PI * 4 + (s * Math.PI * 2) / spiralCount;
-
-        const crystalGeo = new THREE.ConeGeometry(0.1, 0.4, 4);
-        const crystalMat = new THREE.MeshPhongMaterial({
-          color: 0xff1493,
-          emissive: 0xff1493,
-          emissiveIntensity: 0.3,
-          transparent: true,
-          opacity: 0.8,
-        });
-
-        const crystal = new THREE.Mesh(crystalGeo, crystalMat);
-        crystal.position.set(
-          Math.cos(angle) * (0.5 + t),
-          t * 2,
-          Math.sin(angle) * (0.5 + t)
+    // Create the main blossom - a series of crystalline petals
+    const petalCount = 7;
+    const layerCount = 3;
+    
+    for (let layer = 0; layer < layerCount; layer++) {
+      const petalGroup = new THREE.Group();
+      
+      for (let i = 0; i < petalCount; i++) {
+        const angle = (i / petalCount) * Math.PI * 2;
+        const petal = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.05, 0.2, 1.5, 4, 1, true),
+          new THREE.MeshPhongMaterial({
+            color: 0x9932cc,
+            emissive: 0xff00ff,
+            emissiveIntensity: 0.4,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide,
+            wireframe: true,
+          })
         );
-        crystal.lookAt(new THREE.Vector3(0, crystal.position.y, 0));
-        crystal.rotateX(Math.PI / 2);
-        spiralGroup.add(crystal);
+        
+        petal.position.set(
+          Math.cos(angle) * (0.8 + layer * 0.3),
+          layer * 0.3,
+          Math.sin(angle) * (0.8 + layer * 0.3)
+        );
+        petal.rotation.set(
+          Math.PI / 4 + layer * 0.2,
+          angle,
+          (Math.PI / 6) * layer
+        );
+        petalGroup.add(petal);
       }
-
-      this.mesh.add(spiralGroup);
+      this.mesh.add(petalGroup);
     }
 
-    // Floating energy orbs
-    const orbCount = 12;
-    for (let i = 0; i < orbCount; i++) {
-      const orbGeo = new THREE.SphereGeometry(0.08, 16, 16);
-      const orbMat = new THREE.MeshPhongMaterial({
+    // Add floating crystal shards
+    const shardCount = 20;
+    for (let i = 0; i < shardCount; i++) {
+      const shard = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.1 * Math.random() + 0.05),
+        new THREE.MeshPhongMaterial({
+          color: 0x00ffff,
+          emissive: 0x00ffff,
+          emissiveIntensity: 0.6,
+          transparent: true,
+          opacity: 0.6,
+        })
+      );
+      
+      const radius = 1.5;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI;
+      
+      shard.position.set(
+        radius * Math.sin(phi) * Math.cos(theta),
+        radius * Math.cos(phi) + 1,
+        radius * Math.sin(phi) * Math.sin(theta)
+      );
+      this.mesh.add(shard);
+    }
+
+    // Add central energy core
+    const core = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(0.3),
+      new THREE.MeshPhongMaterial({
         color: 0xffffff,
-        emissive: 0x40e0d0,
+        emissive: 0xff1493,
         emissiveIntensity: 1,
         transparent: true,
-        opacity: 0.6,
-      });
-
-      const orb = new THREE.Mesh(orbGeo, orbMat);
-      orb.position.set(
-        (Math.random() - 0.5) * 2,
-        Math.random() * 3,
-        (Math.random() - 0.5) * 2
-      );
-      this.mesh.add(orb);
-    }
+        opacity: 0.9,
+      })
+    );
+    core.position.y = 0.5;
+    this.mesh.add(core);
   }
 
   animate(time: number) {
     this.mesh.children.forEach((child, index) => {
       if (child instanceof THREE.Group) {
-        // Rotate crystal formations
-        child.rotation.y = time * 0.001 + (index * Math.PI) / 3;
-        child.rotation.z = Math.sin(time * 0.0005) * 0.2;
+        // Rotate petal groups
+        child.rotation.y = time * 0.0005 + (index * Math.PI) / 4;
+        child.rotation.x = Math.sin(time * 0.0003 + index) * 0.1;
       } else if (child instanceof THREE.Mesh) {
-        // Animate floating orbs
-        const offset = index * 1000;
-        child.position.y += Math.sin(time * 0.002 + offset) * 0.01;
-        child.position.x += Math.cos(time * 0.002 + offset) * 0.01;
-        child.position.z += Math.sin(time * 0.003 + offset) * 0.01;
+        // Animate shards and core
+        const offset = index * 100;
+        if (index < this.mesh.children.length - 1) { // All except the core
+          child.position.y += Math.sin(time * 0.001 + offset) * 0.003;
+          child.rotation.x += 0.01;
+          child.rotation.z += 0.01;
+        } else { // Core animation
+          child.scale.setScalar(1 + Math.sin(time * 0.002) * 0.1);
+        }
       }
     });
   }
