@@ -21,6 +21,7 @@ interface Friend {
 
 export default function ZenGardenScene() {
   const [fadeOut, setFadeOut] = useState(false);
+  const [showButtons, setShowButtons] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -700,17 +701,217 @@ export default function ZenGardenScene() {
     const monolith = new QuantumMonolith();
     scene.add(monolith.mesh);
 
+    // Add click handler for monolith
+    const handleClick = (event: MouseEvent) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(monolith.mesh, true);
+
+      if (intersects.length > 0) {
+        setShowButtons((prev) => !prev);
+      }
+    };
+
+    // Add cursor change on hover for monolith
+    const handleMouseOver = (event: MouseEvent) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(monolith.mesh, true);
+
+      if (intersects.length > 0) {
+        document.body.style.cursor = "pointer";
+      } else {
+        document.body.style.cursor = "default";
+      }
+    };
+
+    window.addEventListener("click", handleClick);
+    window.addEventListener("mousemove", handleMouseOver);
+
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       mountRef.current?.removeChild(renderer.domElement);
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("click", handleClick);
+      window.removeEventListener("mousemove", handleMouseOver);
     };
   }, []);
 
   return (
     <div style={{ position: "relative" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100vh" }} />
+
+      {/* Button container */}
+      {showButtons && (
+        <div
+          style={{
+            position: "absolute",
+            top: "30%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <button
+            style={{
+              width: "50px", // Set width
+              height: "50px", // Set height to match width
+              margin: "10px",
+              padding: "0", // Remove padding to maintain circle shape
+              border: "none",
+              borderRadius: "50%", // Make buttons circular
+              background: "rgba(255, 255, 255, 0.8)", // Increased opacity
+              color: "#00ffff",
+              cursor: "pointer",
+              boxShadow: "0 0 15px 5px rgba(0, 255, 255, 0.5)", // Smooth glowing effect
+              transition: "background 0.3s, box-shadow 0.3s",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
+              e.currentTarget.style.boxShadow =
+                "0 0 20px 10px rgba(0, 255, 255, 0.7)"; // Enhanced glow on hover
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
+              e.currentTarget.style.boxShadow =
+                "0 0 15px 5px rgba(0, 255, 255, 0.5)"; // Original glow
+            }}
+            onClick={(event) => {
+              event.stopPropagation();
+              console.log("Button 1 clicked");
+            }}
+          >
+            <img
+              src="/broadcast.png"
+              alt="2"
+              style={{
+                width: "80%",
+                height: "80%",
+                opacity: 0.6,
+                transition: "opacity 0.3s ease", // Add smooth transition
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.8"; // Change opacity on hover
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "0.6"; // Revert opacity when not hovering
+              }}
+            />
+          </button>
+
+          <button
+            style={{
+              width: "50px", // Set width
+              height: "50px", // Set height to match width
+              margin: "10px",
+              padding: "0", // Remove padding to maintain circle shape
+              border: "none",
+              borderRadius: "50%", // Make buttons circular
+              background: "rgba(255, 255, 255, 0.8)", // Increased opacity
+              color: "#00ffff",
+              cursor: "pointer",
+              boxShadow: "0 0 15px 5px rgba(0, 255, 255, 0.5)", // Smooth glowing effect
+              transition: "background 0.3s, box-shadow 0.3s",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
+              e.currentTarget.style.boxShadow =
+                "0 0 20px 10px rgba(0, 255, 255, 0.7)"; // Enhanced glow on hover
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
+              e.currentTarget.style.boxShadow =
+                "0 0 15px 5px rgba(0, 255, 255, 0.5)"; // Original glow
+            }}
+            onClick={(event) => {
+              event.stopPropagation();
+              console.log("Button 2 clicked");
+            }}
+          >
+            <img
+              src="/gift.png"
+              alt="2"
+              style={{
+                width: "80%",
+                height: "80%",
+                opacity: 0.6,
+                transition: "opacity 0.3s ease", // Add smooth transition
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.8"; // Change opacity on hover
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "0.6"; // Revert opacity when not hovering
+              }}
+            />
+          </button>
+
+          <button
+            style={{
+              width: "50px", // Set width
+              height: "50px", // Set height to match width
+              margin: "10px",
+              padding: "0", // Remove padding to maintain circle shape
+              border: "none",
+              borderRadius: "50%", // Make buttons circular
+              background: "rgba(255, 255, 255, 0.8)", // Increased opacity
+              color: "#00ffff",
+              cursor: "pointer",
+              boxShadow: "0 0 15px 5px rgba(0, 255, 255, 0.5)", // Smooth glowing effect
+              transition: "background 0.3s, box-shadow 0.3s",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
+              e.currentTarget.style.boxShadow =
+                "0 0 20px 10px rgba(0, 255, 255, 0.7)"; // Enhanced glow on hover
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
+              e.currentTarget.style.boxShadow =
+                "0 0 15px 5px rgba(0, 255, 255, 0.5)"; // Original glow
+            }}
+            onClick={(event) => {
+              event.stopPropagation();
+              console.log("Button 3 clicked");
+            }}
+          >
+            <img
+              src="/write.png"
+              alt="2"
+              style={{
+                width: "80%",
+                height: "80%",
+                opacity: 0.6,
+                transition: "opacity 0.3s ease", // Add smooth transition
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.8"; // Change opacity on hover
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "0.6"; // Revert opacity when not hovering
+              }}
+            />
+          </button>
+        </div>
+      )}
+
       <div onClick={handleHomeClick}>
         <div
           style={{
