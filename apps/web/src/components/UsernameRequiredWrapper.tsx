@@ -16,12 +16,15 @@ export function UsernameRequiredWrapper({
   useEffect(() => {
     if (userId && !username) {
       setShowDialog(true);
+    } else {
+      setShowDialog(false);
     }
   }, [userId, username]);
 
   const handleUsernameSet = async (newUsername: string) => {
     if (!userId) return;
     await updateUsername(userId, newUsername);
+    setShowDialog(false);
     // window.location.reload();
   };
 
