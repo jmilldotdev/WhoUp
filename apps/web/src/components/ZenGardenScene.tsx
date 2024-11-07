@@ -14,6 +14,8 @@ import { QuantumMonolith } from "./QuantumMonolith";
 import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
 import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
 import { useRouter } from "next/navigation";
+import { CircularBroadcastButton } from "@/components/CircularBroadcastButton";
+
 interface Friend {
   name: string;
   phone: string;
@@ -760,55 +762,7 @@ export default function ZenGardenScene() {
             zIndex: 1000,
           }}
         >
-          <button
-            style={{
-              width: "50px", // Set width
-              height: "50px", // Set height to match width
-              margin: "10px",
-              padding: "0", // Remove padding to maintain circle shape
-              border: "none",
-              borderRadius: "50%", // Make buttons circular
-              background: "rgba(255, 255, 255, 0.8)", // Increased opacity
-              color: "#00ffff",
-              cursor: "pointer",
-              boxShadow: "0 0 15px 5px rgba(0, 255, 255, 0.5)", // Smooth glowing effect
-              transition: "background 0.3s, box-shadow 0.3s",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 1)";
-              e.currentTarget.style.boxShadow =
-                "0 0 20px 10px rgba(0, 255, 255, 0.7)"; // Enhanced glow on hover
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
-              e.currentTarget.style.boxShadow =
-                "0 0 15px 5px rgba(0, 255, 255, 0.5)"; // Original glow
-            }}
-            onClick={(event) => {
-              event.stopPropagation();
-              console.log("Button 1 clicked");
-            }}
-          >
-            <img
-              src="/broadcast.png"
-              alt="2"
-              style={{
-                width: "80%",
-                height: "80%",
-                opacity: 0.6,
-                transition: "opacity 0.3s ease", // Add smooth transition
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.8"; // Change opacity on hover
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "0.6"; // Revert opacity when not hovering
-              }}
-            />
-          </button>
+          <CircularBroadcastButton />
 
           <button
             style={{
@@ -846,16 +800,16 @@ export default function ZenGardenScene() {
               src="/gift.png"
               alt="2"
               style={{
-                width: "80%",
-                height: "80%",
-                opacity: 0.6,
+                width: "100%",
+                height: "100%",
+                opacity: 0.8,
                 transition: "opacity 0.3s ease", // Add smooth transition
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.8"; // Change opacity on hover
+                e.currentTarget.style.opacity = "1"; // Change opacity on hover
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "0.6"; // Revert opacity when not hovering
+                e.currentTarget.style.opacity = "0.8"; // Revert opacity when not hovering
               }}
             />
           </button>
@@ -896,16 +850,16 @@ export default function ZenGardenScene() {
               src="/write.png"
               alt="2"
               style={{
-                width: "80%",
-                height: "80%",
-                opacity: 0.6,
+                width: "100%",
+                height: "100%",
+                opacity: 0.8,
                 transition: "opacity 0.3s ease", // Add smooth transition
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.8"; // Change opacity on hover
+                e.currentTarget.style.opacity = "1"; // Change opacity on hover
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "0.6"; // Revert opacity when not hovering
+                e.currentTarget.style.opacity = "0.8"; // Revert opacity when not hovering
               }}
             />
           </button>

@@ -6,7 +6,6 @@ import styles from "@/app/page.module.css";
 import { GardenBackground } from "@/components/GardenBackground";
 import { FriendSearch } from "@/components/FriendSearch";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/providers/UserProvider";
 
 export function MoonPhaseViewer() {
   const router = useRouter();
@@ -19,7 +18,6 @@ export function MoonPhaseViewer() {
   const [isHolding, setIsHolding] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [isFriendSearchOpen, setIsFriendSearchOpen] = useState(false);
-  const { gardenObjects } = useUser();
 
   useEffect(() => {
     const getTodaysMoonPhase = (): number => {
@@ -129,10 +127,6 @@ export function MoonPhaseViewer() {
     });
 
     return `${date} ${time}`;
-  };
-
-  const handleRockClick = () => {
-    alert("You clicked the floating rock!"); // You can replace this with your desired message
   };
 
   const handleRockMouseDown = () => {
