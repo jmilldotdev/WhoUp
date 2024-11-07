@@ -221,6 +221,7 @@ export type Database = {
           id: string
           object_component_type: string
           object_scene_position: string | null
+          text: string | null
           user_id: string
         }
         Insert: {
@@ -228,6 +229,7 @@ export type Database = {
           id?: string
           object_component_type: string
           object_scene_position?: string | null
+          text?: string | null
           user_id: string
         }
         Update: {
@@ -235,6 +237,7 @@ export type Database = {
           id?: string
           object_component_type?: string
           object_scene_position?: string | null
+          text?: string | null
           user_id?: string
         }
         Relationships: [
