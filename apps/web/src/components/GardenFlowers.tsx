@@ -13,32 +13,29 @@ interface GardenFlowersProps {
   scene: THREE.Scene;
   camera: THREE.Camera;
   gardenObjects?: GardenObject[];
+  onFlowerClick?: (text: string) => void;
 }
 
 export class GardenFlowers {
   private scene: THREE.Scene;
   private camera: THREE.Camera;
   private alienFlowers: any[] = [];
-  private textDisplay: {
-    sprite: THREE.Sprite;
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D | null;
-  };
   private flowerRaycaster: THREE.Raycaster;
   private hoveredFlower: THREE.Mesh | null = null;
+  private onFlowerClick: ((text: string) => void) | undefined;
 
-  constructor({ scene, camera, gardenObjects }: GardenFlowersProps) {
+  constructor({ scene, camera, gardenObjects, onFlowerClick }: GardenFlowersProps) {
     this.scene = scene;
     this.camera = camera;
     this.flowerRaycaster = new THREE.Raycaster();
-    this.textDisplay = this.createTextDisplay();
-    this.scene.add(this.textDisplay.sprite);
+    this.onFlowerClick = onFlowerClick;
     
     if (gardenObjects) {
       this.createFlowers(gardenObjects);
     }
 
     window.addEventListener("mousemove", this.onFlowerMouseMove.bind(this));
+    window.addEventListener("click", this.handleFlowerClick.bind(this));
   }
 
   private createFlowerFromType(type: string) {
@@ -62,34 +59,6 @@ export class GardenFlowers {
       default:
         return new AlienFlower();
     }
-  }
-
-  private createTextDisplay() {
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    canvas.width = 1024;
-    canvas.height = 256;
-
-    if (context) {
-      context.fillStyle = "rgba(0, 0, 0, 0.7)";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.font = "48px Arial";
-      context.fillStyle = "white";
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({
-      map: texture,
-      transparent: true,
-      opacity: 0,
-    });
-
-    const sprite = new THREE.Sprite(material);
-    sprite.scale.set(10, 2.5, 1);
-    sprite.position.set(0, 5, 0);
-    return { sprite, canvas, context };
   }
 
   private createFlowers(gardenObjects: GardenObject[]) {
@@ -118,10 +87,11 @@ export class GardenFlowers {
 
     this.flowerRaycaster.setFromCamera(mousePos, this.camera);
     const intersects = this.flowerRaycaster.intersectObjects(
-      this.alienFlowers.map((flower) => flower.mesh)
+      this.alienFlowers.map((flower) => flower.mesh),
+      true
     );
 
-    if (intersects?.[0]) {
+    if (intersects.length > 0 && intersects[0]?.object) {
       const newHoveredFlower = intersects[0].object as THREE.Mesh;
       if (newHoveredFlower !== this.hoveredFlower) {
         if (this.hoveredFlower && this.hoveredFlower.material instanceof THREE.MeshPhongMaterial) {
@@ -129,28 +99,43 @@ export class GardenFlowers {
         }
         
         this.hoveredFlower = newHoveredFlower;
+        document.body.style.cursor = "pointer";
         
         if (this.hoveredFlower.material instanceof THREE.MeshPhongMaterial) {
           this.hoveredFlower.material.emissiveIntensity = 1;
         }
-
-        const text = this.hoveredFlower.userData.text;
-        if (this.textDisplay.context && text) {
-          this.textDisplay.context.clearRect(0, 0, this.textDisplay.canvas.width, this.textDisplay.canvas.height);
-          this.textDisplay.context.fillStyle = "rgba(0, 0, 0, 0.7)";
-          this.textDisplay.context.fillRect(0, 0, this.textDisplay.canvas.width, this.textDisplay.canvas.height);
-          this.textDisplay.context.fillStyle = "white";
-          this.textDisplay.context.fillText(text, this.textDisplay.canvas.width / 2, this.textDisplay.canvas.height / 2);
-          (this.textDisplay.sprite.material.map as THREE.CanvasTexture).needsUpdate = true;
-        }
-        this.textDisplay.sprite.material.opacity = 1;
       }
     } else {
       if (this.hoveredFlower && this.hoveredFlower.material instanceof THREE.MeshPhongMaterial) {
         this.hoveredFlower.material.emissiveIntensity = 0.5;
       }
       this.hoveredFlower = null;
-      this.textDisplay.sprite.material.opacity = 0;
+      document.body.style.cursor = "default";
+    }
+  }
+
+  private handleFlowerClick(event: MouseEvent) {
+    const mousePos = new THREE.Vector2(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      -(event.clientY / window.innerHeight) * 2 + 1
+    );
+
+    this.flowerRaycaster.setFromCamera(mousePos, this.camera);
+    const intersects = this.flowerRaycaster.intersectObjects(
+      this.alienFlowers.map((flower) => flower.mesh),
+      true
+    );
+
+    if (intersects.length > 0 && intersects[0]?.object) {
+      const clickedFlower = intersects[0].object as THREE.Mesh;
+      let text = clickedFlower.userData.text;
+      if (!text && clickedFlower.parent) {
+        text = clickedFlower.parent.userData.text;
+      }
+
+      if (text && this.onFlowerClick) {
+        this.onFlowerClick(text);
+      }
     }
   }
 
@@ -164,5 +149,6 @@ export class GardenFlowers {
 
   cleanup() {
     window.removeEventListener("mousemove", this.onFlowerMouseMove.bind(this));
+    window.removeEventListener("click", this.handleFlowerClick.bind(this));
   }
 } 
