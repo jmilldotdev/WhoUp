@@ -55,13 +55,15 @@ export function FriendSearch({ isOpen, onClose, onFriendAdded }: Props) {
             autoFocus
           />
           {error && <div className={styles.error}>{error}</div>}
-          <button
-            type="submit"
-            className={styles.addButton}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Adding..." : "Add Friend"}
-          </button>
+          <div className="mt-3">
+            <button
+              type="submit"
+              className={styles.addButton}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Adding..." : "Add Friend"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
