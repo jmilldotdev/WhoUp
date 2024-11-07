@@ -89,3 +89,10 @@ a {
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this to your existing globals.css */
+.auth-required-blur {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
