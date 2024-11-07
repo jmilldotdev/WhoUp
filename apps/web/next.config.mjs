@@ -1,4 +1,7 @@
-module.exports = {
+import { writeFileSync } from 'fs';
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   async headers() {
     return [
       {
@@ -38,3 +41,10 @@ module.exports = {
     ];
   },
 };
+
+// Create .npmrc file during build
+if (process.env.NPM_RC) {
+  writeFileSync('.npmrc', process.env.NPM_RC);
+}
+
+export default nextConfig; 
