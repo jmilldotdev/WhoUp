@@ -51,7 +51,7 @@ export function UsernameDialog({ isOpen, onUsernameSet }: Props) {
               required
               minLength={3}
               maxLength={20}
-              pattern="^[a-zA-Z0-9_-]+$"
+              // pattern="^[a-zA-Z0-9_-]+$"
               title="Username can only contain letters, numbers, underscores, and hyphens"
             />
           </div>
@@ -64,4 +64,4 @@ export function UsernameDialog({ isOpen, onUsernameSet }: Props) {
       </DialogContent>
     </Dialog>
   );
-} 
+}
