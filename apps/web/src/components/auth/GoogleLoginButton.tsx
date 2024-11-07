@@ -25,7 +25,6 @@ const GoogleLoginButton = () => {
       return;
     }
 
-    // Handle PWA case
     if (isPWA && data.url) {
       const popup = window.open(
         data.url,
@@ -34,17 +33,14 @@ const GoogleLoginButton = () => {
       );
 
       if (popup) {
-        const timer = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(timer);
-            // Optionally, you can check the auth state here
-            supabase.auth.getSession().then(({ data: { session } }) => {
-              if (session) {
-                // Handle successful login
-              }
-            });
+        window.addEventListener('message', (event) => {
+          if (event.origin === window.location.origin) {
+            // Handle the received message
+            console.log('Received auth data:', event.data);
+            // Close the popup
+            popup.close();
           }
-        }, 1000);
+        });
       }
     }
   };
