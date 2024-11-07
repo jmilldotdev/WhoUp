@@ -1,8 +1,4 @@
-# WhoUp
-
-*Reprogram Your Doomscrolling*
-
-## What Is This?
+# WhoUp - Reprogram Your Doomscrolling
 
 WhoUp is an app to help you reprogram your doomscrolling triggers and catch up with your friends. Instead of scrolling your phone, broadcast that you are available for a casual call to close friends or do a quick mindful reflection instead.
 
