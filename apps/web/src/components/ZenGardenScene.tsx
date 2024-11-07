@@ -4,21 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Water } from "three/examples/jsm/objects/Water.js";
-import { AlienBioluminescentFlower } from "@/components/Flowers/AlienBioluminescentFlower";
-import { AlienCrystalFlower } from "@/components/Flowers/AlienCrystalFlower";
-import { AlienPrismFlower } from "@/components/Flowers/AlienPrismFlower";
-import { AlienNebulaFlower } from "@/components/Flowers/AlienNebulaFlower";
-import { AlienVortexFlower } from "@/components/Flowers/AlienVortexFlower";
-import { AlienFlower } from "@/components/Flowers/AlienFlower";
 import { QuantumMonolith } from "./QuantumMonolith";
-import { AlienCrystalTree } from "@/components/Flowers/AlienCrystalTree";
-import { AlienLightPods } from "@/components/Flowers/AlienLightPods";
 import { useRouter } from "next/navigation";
 import { CircularBroadcastButton } from "@/components/CircularBroadcastButton";
 import { GiftButton } from "@/components/GiftButton";
 import { WritingButton } from "@/components/WritingButton";
 import { useUser } from "@/providers/UserProvider";
-import { GardenFlowers } from "./GardenFlowers";
+import { GardenFlowers } from "@/components/GardenFlowers";
 interface Friend {
   name: string;
   phone: string;
@@ -34,6 +26,9 @@ export default function ZenGardenScene() {
   let glowTarget = 0;
   let currentGlow = 0;
   const glowSpeed = 0.1; // Adjust this value to control transition speed
+
+  const [showFlowerMessage, setShowFlowerMessage] = useState(false);
+  const [flowerMessage, setFlowerMessage] = useState("");
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -490,6 +485,10 @@ export default function ZenGardenScene() {
       scene,
       camera,
       gardenObjects,
+      onFlowerClick: (text) => {
+        setFlowerMessage(text);
+        setShowFlowerMessage(true);
+      }
     });
 
     // Lighting
@@ -620,7 +619,7 @@ export default function ZenGardenScene() {
       window.removeEventListener("mousemove", handleMouseOver);
       gardenFlowers.cleanup();
     };
-  }, []);
+  }, [gardenObjects]);
 
   return (
     <div style={{ position: "relative" }}>
@@ -683,6 +682,43 @@ export default function ZenGardenScene() {
           />
         </div>
       </div>
+
+      {showFlowerMessage && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            padding: "20px",
+            zIndex: 1000,
+            width: "90%",
+            maxWidth: "600px",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1), 0 0 15px 5px rgba(255, 255, 255, 0.6)",
+          }}
+        >
+          <h2 className="font-mono text-white">Memory</h2>
+          <p className="font-mono text-white mt-4">{flowerMessage}</p>
+          <button
+            onClick={() => setShowFlowerMessage(false)}
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              background: "transparent",
+              border: "none",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "16px",
+            }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       {/* Add fade transition overlay */}
       <div

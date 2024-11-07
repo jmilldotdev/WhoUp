@@ -7,7 +7,7 @@ import { useUser } from "@/providers/UserProvider";
 import { toast } from "sonner";
 
 export function GiftButton() {
-  const { userId } = useUser();
+  const { userId, refreshGardenObjects } = useUser();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isCreating, setIsCreating] = useState(false);
@@ -41,6 +41,7 @@ export function GiftButton() {
     try {
       setIsCreating(true);
       const result = await createGardenObject(userId, message);
+      await refreshGardenObjects();
       toast.success(`Created new ${result.object_component_type}!`);
       setOpen(false);
     } catch (error) {
