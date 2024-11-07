@@ -98,7 +98,7 @@ export function LoginDialog({
 
           {isEmailLogin ? (
             <form onSubmit={handleEmailLogin} className="space-y-4">
-              <div>
+              <div className="text-white">
                 <Input
                   type="email"
                   placeholder="Email"
@@ -108,7 +108,7 @@ export function LoginDialog({
                   required
                 />
               </div>
-              <div>
+              <div className="text-white">
                 <Input
                   type="password"
                   placeholder="Password"
