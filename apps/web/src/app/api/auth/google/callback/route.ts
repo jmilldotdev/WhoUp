@@ -10,11 +10,27 @@ export async function GET(request: Request) {
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
-    // Exchange the code for a session
     await supabase.auth.exchangeCodeForSession(code);
-    return NextResponse.redirect("/");
+    
+    // Handle PWA popup window
+    return new Response(
+      `
+        <html>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage('auth-complete', '*');
+              window.close();
+            } else {
+              window.location.href = '/';
+            }
+          </script>
+        </html>
+      `,
+      {
+        headers: { 'Content-Type': 'text/html' },
+      }
+    );
   }
 
-  // URL to redirect to after sign in process completes
   return NextResponse.redirect(requestUrl.origin);
 }
