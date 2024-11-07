@@ -285,6 +285,7 @@ export function MoonPhaseViewer() {
                 e.preventDefault();
                 handleRockMouseUp();
               }}
+              onContextMenu={(e) => e.preventDefault()}
               draggable={false}
               style={{
                 cursor: "pointer",
