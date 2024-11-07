@@ -296,4 +296,9 @@ export class QuantumMonolith {
 
     animate();
   }
+
+  toggleOptions() {
+    // Implement the functionality for toggling options here
+    console.log("Toggling options for QuantumMonolith");
+  }
 }
