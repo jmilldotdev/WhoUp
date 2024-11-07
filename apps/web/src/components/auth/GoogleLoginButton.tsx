@@ -6,11 +6,28 @@ const GoogleLoginButton = () => {
   const supabase = createClient();
 
   const handleGoogleLogin = async () => {
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+    
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://localhost:3000/api/auth/google/callback",
+        redirectTo: `${window.location.origin}/api/auth/google/callback`,
+        skipBrowserRedirect: isPWA,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
       },
+    }).then(({ data, error }) => {
+      if (error) {
+        console.error('OAuth error:', error.message);
+        return;
+      }
+
+      // Handle PWA case
+      if (isPWA && data.url) {
+        window.open(data.url, '_blank', 'width=500,height=600');
+      }
     });
   };
 

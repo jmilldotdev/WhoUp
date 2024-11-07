@@ -4,8 +4,10 @@ import "./globals.css";
 import { getCurrentUser, getUserProfile } from "@/actions/auth";
 import { UserProvider } from "@/providers/UserProvider";
 import { UsernameRequiredWrapper } from "@/components/UsernameRequiredWrapper";
-import { Toaster } from 'sonner';
-import { getUserGardenObjects } from "@/actions/gardenObjects";
+import { AuthRequired } from "@/components/auth/AuthRequired";
+import { Toaster } from "sonner";
+import { GardenObject, getUserGardenObjects } from "@/actions/gardenObjects";
+import { headers } from "next/headers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,19 +28,25 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
-  const profile = await getUserProfile(user);
-  const gardenObjects = await getUserGardenObjects(user?.id);
+  let user = null;
+  let profile = null;
+  let gardenObjects: GardenObject[] = [];
+
+  user = await getCurrentUser();
+  profile = await getUserProfile(user);
+  gardenObjects = await getUserGardenObjects(user?.id);
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <UserProvider 
-          userId={user?.id} 
+        <UserProvider
+          userId={user?.id}
           username={profile?.username}
           initialGardenObjects={gardenObjects}
         >
-          <UsernameRequiredWrapper>{children}</UsernameRequiredWrapper>
+          <AuthRequired>
+            <UsernameRequiredWrapper>{children}</UsernameRequiredWrapper>
+          </AuthRequired>
         </UserProvider>
         <Toaster />
       </body>

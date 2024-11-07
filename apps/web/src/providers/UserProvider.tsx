@@ -10,11 +10,11 @@ interface UserContextType {
   setGardenObjects: (objects: GardenObject[]) => void;
 }
 
-const UserContext = createContext<UserContextType | null>(null);
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function useUser() {
   const context = useContext(UserContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
@@ -34,17 +34,17 @@ export function UserProvider({
   children,
 }: UserProviderProps) {
   const [gardenObjects, setGardenObjects] = 
-    useState<GardenObject[]>(initialGardenObjects);
+    useState<GardenObject[]>(initialGardenObjects || []);
+
+  const value = {
+    userId,
+    username,
+    gardenObjects,
+    setGardenObjects,
+  };
 
   return (
-    <UserContext.Provider 
-      value={{ 
-        userId, 
-        username, 
-        gardenObjects,
-        setGardenObjects
-      }}
-    >
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );

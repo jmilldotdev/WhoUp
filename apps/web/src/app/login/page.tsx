@@ -1,19 +1,10 @@
+"use client";
+
 import { CONFIG } from "@/lib/config";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 
-export default async function OnboardingPage() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (session) {
-    redirect("/");
-  }
-
+export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="w-full max-w-md space-y-8">
