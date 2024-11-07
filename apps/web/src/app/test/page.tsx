@@ -39,7 +39,7 @@ const TestPage = () => {
 
     try {
       setIsCreating(true);
-      const result = await createGardenObject(userId);
+      const result = await createGardenObject(userId, "");
       toast.success(`Created new ${result.object_component_type}!`);
     } catch (error) {
       toast.error("Failed to create garden object");
@@ -77,11 +77,16 @@ const TestPage = () => {
         account,
         userDelegateAccount.address
       );
+
+      const { factory, factoryData } = await account.getFactoryArgs();
+
+      const factoryArgs =
+        factory && factoryData ? { factory, factoryData } : undefined;
       console.log(delegation);
       const receipt = await executeOnBehalfOfDelegator(
         userDelegateAccount,
         delegation,
-        undefined
+        factoryArgs
       );
       if (receipt.success) {
         setUserOperationReceipt(receipt);

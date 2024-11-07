@@ -121,7 +121,7 @@ export const executeOnBehalfOfDelegator = async (
   const executions: ExecutionStruct[] = [
     {
       target: process.env.NEXT_PUBLIC_ERC20_ADDRESS as Address,
-      value: 10n,
+      value: 0n,
       callData: encodeFunctionData({
         abi: [
           {
