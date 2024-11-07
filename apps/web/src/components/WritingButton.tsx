@@ -1,39 +1,60 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@/providers/UserProvider";
-import { createBroadcast } from "@/actions/broadcasts";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { createGardenObject } from "@/actions/gardenObjects";
+import { useUser } from "@/providers/UserProvider";
+import { toast } from "sonner";
 
-export function CircularBroadcastButton() {
-  const { userId } = useUser();
-  const [isPublic, setIsPublic] = useState(false);
-  const [topic, setTopic] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+export function WritingButton() {
+  const { userId, refreshGardenObjects } = useUser();
   const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [userResponse, setUserResponse] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    if (!userId) return;
-    e.preventDefault();
-    setIsLoading(true);
+  const prompts = [
+    "What's alive in you right now?",
+    "What have you explored today?",
+    "What's one thing you want to share with your friend?",
+    "What made you smile today?",
+    "What challenged you today and how did you handle it?",
+    "What are you grateful for in this moment?",
+    "What's one small win you had today?",
+    "What did you learn about yourself today?",
+    "What act of kindness did you witness or perform today?",
+    "What's one thing you'd like to remember about today?"
+  ];
+
+  const openDialog = () => {
+    const randomIndex = Math.floor(Math.random() * prompts.length);
+    const selectedPrompt = prompts[randomIndex] ?? "How was your day?";
+    setMessage(selectedPrompt);
+    setUserResponse("");
+    setOpen(true);
+  };
+
+  const handleCreateObject = async () => {
+    if (!userId) {
+      toast.error("Please login first");
+      return;
+    }
+    if (!userResponse.trim()) {
+      toast.error("Please write your reflection first");
+      return;
+    }
 
     try {
-      await createBroadcast({
-        userId,
-        topic,
-        isPublic,
-      });
-
+      setIsCreating(true);
+      const result = await createGardenObject(userId, userResponse);
+      await refreshGardenObjects();
+      toast.success(`Created new ${result.object_component_type}!`);
       setOpen(false);
-      setTopic("");
-      setIsPublic(false);
     } catch (error) {
-      console.error("Error creating broadcast:", error);
+      toast.error("Failed to create garden object");
+      console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsCreating(false);
     }
   };
 
@@ -42,7 +63,7 @@ export function CircularBroadcastButton() {
       <button
         onClick={(event) => {
           event.stopPropagation();
-          setOpen(true);
+          openDialog();
         }}
         style={{
           width: "50px",
@@ -72,8 +93,8 @@ export function CircularBroadcastButton() {
         }}
       >
         <img
-          src="/broadcast.png"
-          alt="Broadcast"
+          src="/write.png"
+          alt="Gift"
           style={{
             width: "100%",
             height: "100%",
@@ -107,33 +128,23 @@ export function CircularBroadcastButton() {
               "0 0 10px rgba(0, 0, 0, 0.1), 0 0 15px 5px rgba(255, 255, 255, 0.6)",
           }}
         >
-          <h2 className="font-mono text-white">Create New Broadcast</h2>
-          <form onSubmit={handleSubmit} className="space-y-4 text-white">
-            <div className="space-y-2 font-mono">
-              <Label htmlFor="topic">Topic</Label>
-              <Input
-                id="topic"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                placeholder="Enter broadcast topic..."
-                className="text-white placeholder:text-white"
-                required
-              />
-            </div>
-            <div className="flex items-center justify-between font-mono">
-              <Label htmlFor="public">Make Public</Label>
-              <Switch
-                id="public"
-                checked={isPublic}
-                onCheckedChange={setIsPublic}
-              />
-            </div>
-            <div className="font-mono" style={{ textAlign: "right" }}>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Create Broadcast"}
-              </Button>
-            </div>
-          </form>
+          <h2 className="font-mono text-white">Daily Reflection</h2>
+          <p className="font-mono font-bold italic text-white mb-4">{message}</p>
+          <textarea
+            value={userResponse}
+            onChange={(e) => setUserResponse(e.target.value)}
+            className="w-full p-2 mb-4 bg-black/30 text-white font-mono border border-white/20 rounded-md"
+            rows={4}
+            placeholder="Write your reflection here..."
+          />
+          <div className="font-mono text-center">
+            <Button 
+              onClick={handleCreateObject} 
+              disabled={isCreating || !userResponse.trim()}
+            >
+              {isCreating ? "Creating..." : "Save Reflection"}
+            </Button>
+          </div>
           <button
             onClick={() => setOpen(false)}
             style={{
