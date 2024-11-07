@@ -25,8 +25,10 @@ export function LoginDialog({
   const supabase = createClient();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
         onAuthComplete();
         onOpenChange(false);
         setIsEmailLogin(false);
@@ -62,11 +64,36 @@ export function LoginDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          background: "rgba(0, 0, 0, 0.5)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          padding: "20px",
+          zIndex: 1000,
+          width: "90%",
+          maxWidth: "400px",
+          boxShadow:
+            "0 0 10px rgba(0, 0, 0, 0.1), 0 0 15px 5px rgba(255, 255, 255, 0.6)",
+        }}
+      >
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold">Welcome to WhoUp</h2>
-            <p className="text-sm text-gray-500">Sign in to continue</p>
+            <img
+              src="/icon-512x512.png"
+              alt="WhoUp Logo"
+              className="w-16 h-16 mx-auto mb-4"
+            />
+            <h2 className="text-2xl font-bold text-white font-mono">
+              Welcome to WhoUp
+            </h2>
+            <p className="text-sm text-gray-300 font-mono">
+              Sign in to continue
+            </p>
           </div>
 
           {isEmailLogin ? (
@@ -108,9 +135,9 @@ export function LoginDialog({
           ) : (
             <div className="space-y-4">
               {CONFIG.authMethods.includes("google") && <GoogleLoginButton />}
-              
+
               {CONFIG.authMethods.includes("apple") && (
-                <button className="w-full flex items-center justify-center gap-2 bg-black text-white rounded-md px-3 py-2 text-sm font-semibold hover:bg-gray-900">
+                <button className="w-full flex items-center justify-center gap-2 bg-white text-black rounded-md px-3 py-2 text-sm font-semibold border border-white/20 hover:bg-white/90 shadow-lg shadow-white/20">
                   <img src="/apple-icon.svg" alt="Apple" className="w-5 h-5" />
                   Continue with Apple
                 </button>
@@ -131,4 +158,4 @@ export function LoginDialog({
       </DialogContent>
     </Dialog>
   );
-} 
+}
