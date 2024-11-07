@@ -609,10 +609,7 @@ export default function ZenGardenScene() {
       const intersects = raycaster.intersectObject(monolith.mesh, true);
 
       if (intersects.length > 0) {
-        // Check if any dialog is open
-        if (!openGiftDialog && !openWritingDialog && !openBroadcastDialog) {
-          setShowButtons((prev) => !prev);
-        }
+        setShowButtons((prev) => !prev);
       }
     };
 
