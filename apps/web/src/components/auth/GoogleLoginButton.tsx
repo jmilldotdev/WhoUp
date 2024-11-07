@@ -7,8 +7,8 @@ const GoogleLoginButton = () => {
 
   const handleGoogleLogin = async () => {
     const isPWA = window.matchMedia('(display-mode: standalone)').matches;
-    
-    await supabase.auth.signInWithOAuth({
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/api/auth/google/callback`,
@@ -18,17 +18,35 @@ const GoogleLoginButton = () => {
           prompt: 'consent',
         }
       },
-    }).then(({ data, error }) => {
-      if (error) {
-        console.error('OAuth error:', error.message);
-        return;
-      }
-
-      // Handle PWA case
-      if (isPWA && data.url) {
-        window.open(data.url, '_blank', 'width=500,height=600');
-      }
     });
+
+    if (error) {
+      console.error('OAuth error:', error.message);
+      return;
+    }
+
+    // Handle PWA case
+    if (isPWA && data.url) {
+      const popup = window.open(
+        data.url,
+        '_blank',
+        'width=500,height=600,noopener,noreferrer'
+      );
+
+      if (popup) {
+        const timer = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(timer);
+            // Optionally, you can check the auth state here
+            supabase.auth.getSession().then(({ data: { session } }) => {
+              if (session) {
+                // Handle successful login
+              }
+            });
+          }
+        }, 1000);
+      }
+    }
   };
 
   return (
