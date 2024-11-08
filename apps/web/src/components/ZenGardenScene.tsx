@@ -13,6 +13,8 @@ import { useUser } from "@/providers/UserProvider";
 import { GardenFlowers } from "@/components/GardenFlowers";
 import { useBroadcast } from "@/contexts/BroadcastContext";
 import { getCurrentBroadcast, closeBroadcast } from "@/actions/broadcasts";
+import { createGardenObject } from "@/actions/gardenObjects";
+import { toast } from "sonner";
 
 interface Friend {
   name: string;
@@ -25,7 +27,7 @@ export default function ZenGardenScene() {
   const { currentBroadcast, setCurrentBroadcast } = useBroadcast();
   const mountRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { gardenObjects } = useUser();
+  const { gardenObjects, refreshGardenObjects } = useUser();
   const { userId } = useUser();
   let glowTarget = 0;
   let currentGlow = 0;
@@ -49,11 +51,19 @@ export default function ZenGardenScene() {
     }
 
     try {
+      const result = await createGardenObject(
+        userId || "",
+        currentBroadcast.topic
+      );
+      toast.success(`Created new ${result.object_component_type} with topic!`);
+
+      await refreshGardenObjects();
+
       await closeBroadcast(currentBroadcast.id);
       console.log("Broadcast ended successfully");
-      // Optionally, update the state to reflect that the broadcast has ended
       setCurrentBroadcast(null);
     } catch (error) {
+      toast.error("Error ending broadcast or creating garden object");
       console.error("Error ending broadcast:", error);
     }
   };
