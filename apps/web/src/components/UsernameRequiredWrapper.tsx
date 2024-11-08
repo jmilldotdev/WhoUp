@@ -16,8 +16,6 @@ export function UsernameRequiredWrapper({
   useEffect(() => {
     if (userId && !username) {
       setShowDialog(true);
-    } else {
-      setShowDialog(false);
     }
   }, [userId, username]);
 
