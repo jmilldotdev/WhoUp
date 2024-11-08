@@ -7,6 +7,8 @@ import GoogleLoginButton from "./GoogleLoginButton";
 import { CONFIG } from "@/lib/config";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { getUserProfile } from "@/actions/auth";
+import { useUser } from "@/providers/UserProvider";
 
 export function LoginDialog({
   isOpen,
@@ -23,12 +25,18 @@ export function LoginDialog({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
+  const { setUsername } = useUser();
 
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN") {
+        if (session?.user) {
+          const profile = await getUserProfile(session.user);
+          setUsername(profile?.username || undefined);
+        }
+        
         onAuthComplete();
         onOpenChange(false);
         setIsEmailLogin(false);
@@ -39,7 +47,7 @@ export function LoginDialog({
     });
 
     return () => subscription.unsubscribe();
-  }, [onOpenChange, onAuthComplete]);
+  }, [onOpenChange, onAuthComplete, setUsername]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -5,11 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { LoginDialog } from "./LoginDialog";
 import { useUser } from "@/providers/UserProvider";
 
-export function AuthRequired({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AuthRequired({ children }: { children: React.ReactNode }) {
   const { userId } = useUser();
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
@@ -17,7 +13,9 @@ export function AuthRequired({
   const supabase = createClient();
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     setIsAuthChecking(false);
     setShowLoginDialog(!session);
     setIsAuthenticated(!!session);
@@ -26,11 +24,13 @@ export function AuthRequired({
   useEffect(() => {
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
         setShowLoginDialog(false);
         setIsAuthenticated(true);
-      } else if (event === 'SIGNED_OUT') {
+      } else if (event === "SIGNED_OUT") {
         setShowLoginDialog(true);
         setIsAuthenticated(false);
       }
@@ -45,11 +45,11 @@ export function AuthRequired({
 
   return (
     <>
-      <div className={!isAuthenticated ? 'auth-required-blur' : ''}>
+      <div className={!isAuthenticated ? "auth-required-blur" : ""}>
         {children}
       </div>
-      <LoginDialog 
-        isOpen={showLoginDialog} 
+      <LoginDialog
+        isOpen={showLoginDialog}
         onOpenChange={(open) => {
           if (!open && isAuthenticated) {
             setShowLoginDialog(false);
@@ -58,6 +58,7 @@ export function AuthRequired({
         onAuthComplete={() => {
           setIsAuthenticated(true);
           setShowLoginDialog(false);
+          window.location.reload();
         }}
       />
     </>

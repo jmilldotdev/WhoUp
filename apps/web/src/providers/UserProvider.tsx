@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useCallback,
+} from "react";
 import { GardenObject } from "@/lib/types";
 import { getUserGardenObjects } from "@/actions/gardenObjects";
 
@@ -10,6 +16,7 @@ interface UserContextType {
   gardenObjects: GardenObject[];
   setGardenObjects: (objects: GardenObject[]) => void;
   refreshGardenObjects: () => Promise<void>;
+  setUsername: (username: string | undefined) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,12 +38,14 @@ interface UserProviderProps {
 
 export function UserProvider({
   userId,
-  username,
+  username: initialUsername,
   initialGardenObjects,
   children,
 }: UserProviderProps) {
-  const [gardenObjects, setGardenObjects] = 
-    useState<GardenObject[]>(initialGardenObjects || []);
+  const [gardenObjects, setGardenObjects] = useState<GardenObject[]>(
+    initialGardenObjects || []
+  );
+  const [username, setUsername] = useState(initialUsername);
 
   const refreshGardenObjects = useCallback(async () => {
     if (userId) {
@@ -51,11 +60,8 @@ export function UserProvider({
     gardenObjects,
     setGardenObjects,
     refreshGardenObjects,
+    setUsername,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
