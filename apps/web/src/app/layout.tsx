@@ -8,6 +8,7 @@ import { AuthRequired } from "@/components/auth/AuthRequired";
 import { Toaster } from "sonner";
 import { getUserGardenObjects } from "@/actions/gardenObjects";
 import { GardenObject } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,24 +29,43 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let user = null;
-  let profile = null;
-  let gardenObjects: GardenObject[] = [];
+  const user = await getCurrentUser();
+  
+  // If user is logged in but has no profile/username, force username setup
+  if (user) {
+    const profile = await getUserProfile(user);
+    const gardenObjects = await getUserGardenObjects(user.id);
 
-  user = await getCurrentUser();
-  profile = await getUserProfile(user);
-  gardenObjects = await getUserGardenObjects(user?.id);
+    // If user exists but no profile/username, still render the app but with UsernameRequiredWrapper
+    return (
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+          <UserProvider
+            userId={user.id}
+            username={profile?.username}
+            initialGardenObjects={gardenObjects}
+          >
+            <AuthRequired>
+              <UsernameRequiredWrapper>{children}</UsernameRequiredWrapper>
+            </AuthRequired>
+          </UserProvider>
+          <Toaster />
+        </body>
+      </html>
+    );
+  }
 
+  // Not logged in case
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <UserProvider
-          userId={user?.id}
-          username={profile?.username}
-          initialGardenObjects={gardenObjects}
+          userId={undefined}
+          username={undefined}
+          initialGardenObjects={[]}
         >
           <AuthRequired>
-            <UsernameRequiredWrapper>{children}</UsernameRequiredWrapper>
+            {children}
           </AuthRequired>
         </UserProvider>
         <Toaster />
